@@ -1,0 +1,48 @@
+My plan on how this works:
+
+    From the starting state, we ask the user to put in their OD ID
+    after hitting submit we want to verify that we have the correct user, so we call a GET request to the OD API
+    we get the player name from this API and prompt the user 'Is this the correct player: {their name}'
+
+    afterwards the button should read "confirm" and when clicked again it will call my python script, or 
+    I can rewrite in JS for the fun/exp of it which will be fine since all data is numerical until we get to charts/visualizing
+
+    after the player confirms their request, the content of the whole page should be a loading animation with text updating
+    depending on the stage of completion we're in.
+
+    This will be accomplished through changing states every time a function call is finished - this can be accomplished
+    by having a sentinal variable which changes state.
+
+        preliminary mockup as follows:
+
+        let getSomeData = () => {
+            const [state, setState] = react.useState(0)
+
+            function foo(){
+                ...
+                setState(state+1)
+                return myData
+            }
+        }
+
+        there should then be a list of messages corresponding to state, something like
+        ['getting player data', 'parsing player matches', 'aquiring data on all players']
+        and so on until we reach completion
+
+    Now suppose this all works, we have all the data we wanted from the API, and done our shitty calculations
+
+    we need to vizualize this data with simple picharts as a baseline - open to more types if I can come up with anything
+
+    so from here we need to figure out how to either export the images from the python script into our webpage
+
+    or 
+
+    find a library in JS to do data vizualization and draw it
+
+
+    in any case I want to replace the currently rendered component with a results page which shows the numbers and charts
+    so also have to figure out conditional rendering or whatever the correct terminology is here 
+
+
+
+    I anticipate this being very hard :(

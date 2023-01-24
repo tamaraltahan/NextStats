@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+
+
+body {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+#topBanner {
+    padding: 1rem 1rem 1rem 1rem;
+    text-align: center;
+    padding-bottom: 2%;
+}
+
+#topBanner a {
+    text-decoration: underline;
+}
+
+#pInput{
+    padding: 10px;
+    border: 0;
+    box-shadow: 0 0 15px 4px rgba(0,0,0,0.86);
+    border-radius: 10px;
+    margin: auto;
+    display: block;
+    margin-bottom: 2rem;
+    width: 10%;
+
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: medium;
+}
+
+#submitButton{
+    display: block;
+    width: 10em;
+    height: 20%;
+    border-radius: 15px;
+
+    height: 2rem;
+
+    text-align: center;
+    margin: auto;
+    font-size: large;
+    
+    border: 5px 5px 5px 5px;
+    border-style: dotted;
+}
+
+#submitButton:hover{
+    background-color: grey;
+    transition: 0.15s;
+}
+
+#submitButton:active{
+    background-color: rgba(31, 190, 230, 0.705);
+    transition: 0.1s;
+}
