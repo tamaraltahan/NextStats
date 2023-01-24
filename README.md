@@ -36,3 +36,20 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+# What this is
+
+I'm learning to use React.js (using Next.js) to create a webpage and integrate my dota smurf detection script into a somewhat interactive webpage.
+
+
+The goal is to make an educated guess onto the amount of smurfs one plays against in their last *n* games with some basic criteria. Not so much an exersize into probability & statistics as it is just to ball park it with some criterea as win %, and number of games as the primary indicators.
+
+You can see my implementation [here](https://github.com/tamaraltahan/GameStats/blob/main/GameStats.py)
+
+### limitations
+
+I am rate limited by the API to 60 calls/minute and given I need to parse 20 matches each with 9 **other** players than the user, I cannot optimize the script to not take... a long time to put it lightly.
+
+Last time I ran my python script it took 15 minutes to finish one function - and 2.5 minutes for another, so yeah...
+
+This is also a learning project for me so there will always be room for improvement and polish to add.
