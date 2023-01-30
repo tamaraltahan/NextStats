@@ -4,6 +4,9 @@ import axios from "axios";
 import Opening from "../jsx/Opening";
 import VerifyPlayer from "./VerifyPlayer.jsx";
 
+//my player id:
+// 1986753
+
 const Top = () => {
   useEffect(() => {
     const fetchData = async () => {

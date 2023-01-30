@@ -73,6 +73,48 @@ body {
 }
 
 
+.verifySection {
+  padding-top: 2rem;
+  text-align: center;
+}
+
+.vButtonAccept{
+  margin-top: 5%;
+  background-color: transparent;
+  border: 1px solid transparent;
+  font-size: 50px;
+
+
+
+  margin-right: 3%;
+  padding: 5px 5px;
+}
+
+.vButtonReject{
+  margin-top: 5%;
+  font-size: xx-large;
+  background-color: transparent;
+  border: 1px solid transparent;
+  font-size: 50px;
+
+
+
+  margin-left: 3%;
+  padding: 5px 5px;
+}
+
+.vButtonAccept:hover{
+  border: 1px solid white;
+  background-color: rgba(0,255,0, .6);
+
+}
+.vButtonReject:hover{
+  border: 1px solid white;
+  background-color: rgba(255,0,0, 0.3);
+  transition: top ease 0.5s;
+}
+
+
 
 /* CSS */
 .button-85 {
