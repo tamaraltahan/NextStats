@@ -18,19 +18,15 @@ const Top = () => {
       }
     };
     const response = fetchData();
-    console.log(response);
+    //console.log(response);
+    //console.log("Swag")
   }, []);
 
   const [playerName, setPlayerName] = useState("");
 
   const handleGetName = (playerName) => {
-    console.log(playerName);
     setPlayerName(playerName);
   };
-
-  // this will be for tracking completion on each stage since my scripts takes a million years
-  const [status, setStatus] = useState("");
-  const [hasName, setHasName] = useState(false);
 
   return (
     <div>

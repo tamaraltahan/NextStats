@@ -10,6 +10,12 @@ app.get('/', (req, res) => {
   res.send('Waheblay')
 })
 
+
+app.post('/verified', (req,res) => {
+  res.send("Poggers")
+})
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

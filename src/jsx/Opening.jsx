@@ -1,28 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const Opening = (props) => {
   const [post, setPost] = useState(null);
   const [error, setError] = useState(null);
-
   const [ID, setID] = useState("");
+  const router = useRouter();
 
   const handleClick = () => {
-
-    const playerLink = `https://api.opendota.com/api/players/${ID}`;
-
-    axios
-      .get(playerLink)
-      .then((response) => {
-        setPost(response.data);
-        props.getName(response.data.profile.personaname)
-        console.log(response);
-      })
-      .catch((error) => {
-        setError(error);
-      });
-    if (error) return `Error: ${error.message}`;
-    if (!post) return "Failed to get POST";
+    router.push(`/verify?id=${ID}`);
   };
 
   return (
