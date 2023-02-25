@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import VerifyPlayer from "../../jsx/VerifyPlayer.jsx";
 import axios from 'axios'
+import Spinner from "../../jsx/Spinner"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -33,6 +34,7 @@ export default function Home() {
       })
       .catch((error) => {
         setError(error);
+        console.log('invalid PID')
       });
     }
     //console.log("swag")
@@ -41,7 +43,7 @@ export default function Home() {
   return (
     <>
     <div>
-      {(!isLoading && post) ? <VerifyPlayer playerName={post.profile.personaname}/> : null }
+      {(!isLoading && post) ? <VerifyPlayer playerName={post.profile.personaname}/> : <Spinner /> }
     </div>
     </>
   )

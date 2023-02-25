@@ -28,8 +28,9 @@ const Opening = (props) => {
 
       <div className="inputContainer">
         <input
+          onWheel={ (e) => e.target.blur() }
           id="pInput"
-          type="text"
+          type="number"
           onChange={(event) => setID(event.target.value)}
         />
 
