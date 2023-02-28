@@ -18,8 +18,6 @@ const Top = () => {
       }
     };
     const response = fetchData();
-    //console.log(response);
-    //console.log("Swag")
   }, []);
 
   const [playerName, setPlayerName] = useState("");

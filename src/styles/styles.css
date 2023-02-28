@@ -114,6 +114,14 @@ body {
   transition: top ease 0.5s;
 }
 
+
+.centered{
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /*prevents arrows on input*/
 
 input::-webkit-outer-spin-button,

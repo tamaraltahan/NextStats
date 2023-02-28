@@ -11,6 +11,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.11",
     "@next/font": "13.1.4",
     "axios": "^1.2.3",
     "body-parser": "^1.20.1",
