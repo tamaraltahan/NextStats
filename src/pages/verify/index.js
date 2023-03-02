@@ -41,10 +41,8 @@ export default function Home() {
   }, [isReady])
 
   return (
-    <>
     <div>
       {(!isLoading && post) ? <VerifyPlayer playerName={post.profile.personaname}/> : <Spinner /> }
     </div>
-    </>
   )
 }

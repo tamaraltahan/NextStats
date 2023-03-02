@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const spawn = require('child_process').spawn
 
 const app = express()
 const port = 3001
@@ -19,3 +20,6 @@ app.post('/verified', (req,res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+
+const ls = spawn('python', [''])

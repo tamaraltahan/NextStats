@@ -2,30 +2,53 @@
 import requests
 import json
 import time
-import matplotlib.pyplot as plt
-#%matplotlib inline
+
 
 class gameStats:
-    def openRecentMatches(self, id):
-        url = 'https://api.opendota.com/api/players/{}/recentMatches'.format(id)
+
+
+    curState = ""
+    isRunning = False
+
+    def sentintel(self):
+        prevState = self.curState
+        while self.isRunning:
+            if self.curState != prevState:
+                prevState = self.curState
+
+    def __init__(self, id):
+        print('constructor')
+        self.id = id
+        data = self.openRecentMatches()
+        self.PIDs = self.getPlayersFromMatches(data)
+        self.playerData = self.getPlayerWinRate(self.PIDs)
+
+
+
+    def openRecentMatches(self):
+        self.curState = "Getting player data"
+        url = 'https://api.opendota.com/api/players/{}/recentMatches'.format(self.id)
         # Get the data from the API
         r = requests.get(url)
         # Convert the data to a JSON object
         recents = r.json
         return recents
 
-    def getPlayersFromMatches(self, id, data):
+    def getPlayersFromMatches(self, data):
         """
         Returns all players ID's in the user's last 20 matches
 
 
         Args:
             id (int): player's steam32 ID
-            data: JSON object of thee recentMatches API call
+            data (JSON): JSON object of thee recentMatches API call
 
         Returns:
             pIDs: A list of non-duplicate player ID's in 20 game match history.
         """
+
+        self.curState = "Analyzing matches & retrieving all public dota profiles"
+
         match_ids = []
         players = []
         pIDs = []
@@ -41,9 +64,10 @@ class gameStats:
             players.append(data['players'])
         
         # Loop through the player ids and add them to the list
+        # Conditions: not null, is not the same as player, and is not already in the list
         for player in players:
             for p in player:
-                if p['account_id'] and p['account_id'] != id and p['account_id'] not in pIDs:
+                if p['account_id'] and p['account_id'] != self.id and p['account_id'] not in pIDs:
                     pIDs.append(p['account_id'])
 
         return pIDs
@@ -58,18 +82,21 @@ class gameStats:
 
 
         Returns:
+            WL (dict): Dictionary containing player's wins, losses, total games, and winrate percent
         """
+        self.curState = "Getting player win/loss data for all known players"
         WL = {}
         counter = 0
         limit = len(pIDs)//4
         # Loop through the player ids and get the win/loss
+        # this bit is just to keep from hitting the rate limit of API calls
+        # would rather sacrifice some efficiency than deal with invalid requests
         for pID in pIDs:
             counter += 1
             if counter == limit:
                 counter = 0
                 time.sleep(20)
-            if pID in WL:
-                print('{} already in WL'.format(pID))
+
             url = 'https://api.opendota.com/api/players/{}/wl'.format(pID)
             r = requests.get(url)
             data = r.json()    
@@ -78,18 +105,12 @@ class gameStats:
             for player in WL:
                 WL[player]['total'] = WL[player]['win'] + WL[player]['lose']
 
-            playerData = WL
-
             # adds the win percent to the WL dictionary
-            for player in playerData:
-                playerData[player]['winPercent'] = round((playerData[player]['win']/playerData[player]['total'])*100,2)
+            for player in WL:
+                WL[player]['winPercent'] = round((WL[player]['win']/WL[player]['total'])*100,2)
         
-    def anonProfiles(self, games,profiles):
-        expected = games * 9
-        actual = profiles
-        return round((actual/expected)*100,2)
-
-
+            return WL
+        
     def judgePlayers(self, playerData):
         accountBuyers = 0
         ABList = []
@@ -106,27 +127,17 @@ class gameStats:
                     smurfCount += 1
                     smurfList.append(player)
 
-    #TODO: write function that returns needed data points as JSON
     def getData(self):
-        return 1
 
+        retData = {
+            "ID" : self.id,
+            "PlayerIDList" : self.PIDs,
+            "playerData" : self.playerData
+        }
 
-    def plot(self, playerCount, accountBuyers, smurfCount):
-        normal = playerCount - accountBuyers
-        normalPercent = round((normal/playerCount)*100,2)
-        explode1 = [0,0.1]
-        explode2 = [0.1,0]
-        actors = plt.pie([accountBuyers,normal],labels=['Account Buyers','Normal'],autopct='%1.1f%%',explode=explode1,shadow=True,startangle=90)
-        smurfs = plt.pie([accountBuyers,smurfCount],labels=['Account Buyers','Smurfs'],autopct='%1.1f%%',explode=explode2,shadow=True,startangle=90)
-        fig, (AB,SMF) = plt.subplots(1,2,figsize=(10,10)) #ax1,ax2 refer to your two pies
-        fig.set_facecolor('#f2f2f2')
-        fig.tight_layout()
-        fig.subplots_adjust(wspace=0.5)
-
-        # 1,2 denotes 1 row, 2 columns - if you want to stack vertically, it would be 2,1
-        AB.pie([accountBuyers,normal],labels=['Account Buyers','Normal'],autopct='%1.1f%%',explode=explode1,shadow=True,startangle=90)
-        AB.title.set_text('Account Buyers to normal players')
-
-
-        SMF.pie([accountBuyers,smurfCount],labels=['Account Buyers','Smurfs'],autopct='%1.1f%%',explode=explode2,shadow=True,startangle=90)
-        SMF.title.set_text('Account Buyers to smurfs')
+        r = json.dumps(retData)
+        return json.loads(r)
+    
+    def getState(self):
+        return self.curState
+        
