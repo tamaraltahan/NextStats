@@ -2,13 +2,24 @@
 import requests
 import json
 import time
+import statistics
 
 
 class gameStats:
 
-
+    APICalls = 0
     curState = ""
     isRunning = False
+    times = []
+
+
+
+    def __init__(self, id):
+        self.id = id
+        data = self.openRecentMatches()
+        self.PIDs = self.getPlayersFromMatches(data)
+        self.playerData = self.getPlayerWinRate(self.PIDs)
+
 
     def sentintel(self):
         prevState = self.curState
@@ -16,25 +27,24 @@ class gameStats:
             if self.curState != prevState:
                 prevState = self.curState
 
-    def __init__(self, id):
-        print('constructor')
-        self.id = id
-        data = self.openRecentMatches()
-        self.PIDs = self.getPlayersFromMatches(data)
-        self.playerData = self.getPlayerWinRate(self.PIDs)
+    def calcTime(self, start, end):
+        total = end - start
+        self.times.append(total)
 
 
 
     def openRecentMatches(self):
         self.curState = "Getting player data"
         url = 'https://api.opendota.com/api/players/{}/recentMatches'.format(self.id)
+        self.APICalls += 1
         # Get the data from the API
         r = requests.get(url)
         # Convert the data to a JSON object
-        recents = r.json
+        recents = r.json()
         return recents
 
     def getPlayersFromMatches(self, data):
+        start = time.perf_counter()
         """
         Returns all players ID's in the user's last 20 matches
 
@@ -59,6 +69,7 @@ class gameStats:
         # Loop through the match ids and get the player ids
         for match in match_ids:
             url = 'https://api.opendota.com/api/matches/{}'.format(match)
+            self.APICalls += 1
             r = requests.get(url)
             data = r.json()
             players.append(data['players'])
@@ -69,7 +80,8 @@ class gameStats:
             for p in player:
                 if p['account_id'] and p['account_id'] != self.id and p['account_id'] not in pIDs:
                     pIDs.append(p['account_id'])
-
+        end = time.perf_counter()
+        self.calcTime(start, end)
         return pIDs
 
 
@@ -84,6 +96,7 @@ class gameStats:
         Returns:
             WL (dict): Dictionary containing player's wins, losses, total games, and winrate percent
         """
+        start = time.perf_counter()
         self.curState = "Getting player win/loss data for all known players"
         WL = {}
         counter = 0
@@ -98,18 +111,22 @@ class gameStats:
                 time.sleep(20)
 
             url = 'https://api.opendota.com/api/players/{}/wl'.format(pID)
+            self.APICalls += 1
             r = requests.get(url)
             data = r.json()    
             WL[pID] = data
+
             # adds the win/loss to the WL dictionary
-            for player in WL:
-                WL[player]['total'] = WL[player]['win'] + WL[player]['lose']
+        for player in WL:
+            WL[player]['total'] = WL[player]['win'] + WL[player]['lose']
 
             # adds the win percent to the WL dictionary
-            for player in WL:
-                WL[player]['winPercent'] = round((WL[player]['win']/WL[player]['total'])*100,2)
-        
-            return WL
+        for player in WL:
+            WL[player]['winPercent'] = round((WL[player]['win']/WL[player]['total'])*100,2)
+
+        end = time.perf_counter()
+        self.calcTime(start, end)
+        return WL
         
     def judgePlayers(self, playerData):
         accountBuyers = 0
@@ -127,12 +144,52 @@ class gameStats:
                     smurfCount += 1
                     smurfList.append(player)
 
-    def getData(self):
 
+    def findOutliers(self, stats):
+        
+        outliersWins = []
+        outliersTotal = []
+        sus = []
+
+        for player in self.playerData:
+            if player['winPercent'] >= stats['meanWins'] + stats['stdWins'] * 3:
+                outliersWins.append(player)
+            if player['total'] >= stats['meanTotal'] + stats['stdTotal'] * 3:
+                outliersTotal.append(player)
+
+        for player in self.playerData:
+            if player in outliersTotal and player in outliersWins:
+                sus.append(player)
+
+
+    def getPlayerStats(self, playerData):
+        wins = []
+        totalGames = []
+
+        for player in playerData:
+            wins.append(player['winPercent'])
+            totalGames.append(player['total'])
+        
+
+        meanWin = statistics.mean(wins)
+        stdWins = statistics.stdev(wins)
+        meanTotal = statistics.mean(totalGames)
+        stdTotal = statistics.stdev(totalGames)
+
+        stats = {
+            "meanWin" : meanWin,
+            "meanTotal" : meanTotal,
+            "stdWins" : stdWins,
+            "stdTotal" : stdTotal
+        }
+
+        return stats
+
+    def getData(self):
         retData = {
-            "ID" : self.id,
-            "PlayerIDList" : self.PIDs,
-            "playerData" : self.playerData
+            "playerData" : self.playerData,
+            "APICalls" : self.APICalls,
+            "Times" : self.times
         }
 
         r = json.dumps(retData)
