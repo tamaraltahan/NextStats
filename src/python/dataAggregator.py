@@ -3,13 +3,10 @@ import requests
 import json
 import time
 import statistics
-import scipy.stats as stats
-
 
 class gameStats:
 
     APICalls = 0
-    curState = ""
     isRunning = False
     times = []
 
@@ -21,18 +18,11 @@ class gameStats:
         self.stats = self.getPlayerStats()
         self.outlierData = self.findOutliers(self.stats)
 
-    def sentintel(self):
-        prevState = self.curState
-        while self.isRunning:
-            if self.curState != prevState:
-                prevState = self.curState
-
     def calcTime(self, start, end):
         total = end - start
         self.times.append(total)
 
     def openRecentMatches(self):
-        self.curState = "Getting player data"
         url = 'https://api.opendota.com/api/players/{}/recentMatches'.format(self.id)
         self.APICalls += 1
         # Get the data from the API
@@ -54,9 +44,6 @@ class gameStats:
         Returns:
             pIDs: A list of non-duplicate player ID's in 20 game match history.
         """
-
-        self.curState = "Analyzing matches & retrieving all public dota profiles"
-
         match_ids = []
         players = []
         pIDs = []
@@ -94,7 +81,6 @@ class gameStats:
             WL (dict): Dictionary containing player's wins, losses, total games, and winrate percent
         """
         start = time.perf_counter()
-        self.curState = "Getting player win/loss data for all known players"
         WL = {}
         counter = 0
         limit = len(pIDs)//4
@@ -148,7 +134,6 @@ class gameStats:
         #player data is organized as 
         #Key: Player ID
         #Value: win , lose, total, winPercent
-
 
         # 1.5x std dev encapsulated 85% of players
         # meaning I'm 'flagging' anyone who's in the best and worst 15% of measured criterea
@@ -215,6 +200,3 @@ class gameStats:
 
         r = json.dumps(retData)
         return r
-
-    def getState(self):
-        return self.curState
