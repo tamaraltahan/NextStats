@@ -3,6 +3,7 @@ import requests
 import json
 import time
 import statistics
+import scipy.stats as stats
 
 
 class gameStats:
@@ -12,14 +13,13 @@ class gameStats:
     isRunning = False
     times = []
 
-
-
     def __init__(self, id):
         self.id = id
         data = self.openRecentMatches()
         self.PIDs = self.getPlayersFromMatches(data)
         self.playerData = self.getPlayerWinRate(self.PIDs)
-
+        self.stats = self.getPlayerStats()
+        self.outlierData = self.findOutliers(self.stats)
 
     def sentintel(self):
         prevState = self.curState
@@ -30,8 +30,6 @@ class gameStats:
     def calcTime(self, start, end):
         total = end - start
         self.times.append(total)
-
-
 
     def openRecentMatches(self):
         self.curState = "Getting player data"
@@ -62,7 +60,7 @@ class gameStats:
         match_ids = []
         players = []
         pIDs = []
-        
+
         # Loop through the matches and add the match ids to the list
         for match in data:
             match_ids.append(match['match_id'])
@@ -73,7 +71,7 @@ class gameStats:
             r = requests.get(url)
             data = r.json()
             players.append(data['players'])
-        
+
         # Loop through the player ids and add them to the list
         # Conditions: not null, is not the same as player, and is not already in the list
         for player in players:
@@ -83,7 +81,6 @@ class gameStats:
         end = time.perf_counter()
         self.calcTime(start, end)
         return pIDs
-
 
     def getPlayerWinRate(self, pIDs):
         """
@@ -113,63 +110,86 @@ class gameStats:
             url = 'https://api.opendota.com/api/players/{}/wl'.format(pID)
             self.APICalls += 1
             r = requests.get(url)
-            data = r.json()    
+            data = r.json()
             WL[pID] = data
 
-            # adds the win/loss to the WL dictionary
+        corruptedPlayerKeys = []
         for player in WL:
-            WL[player]['total'] = WL[player]['win'] + WL[player]['lose']
+            try:
+                total = WL[player]['win'] + WL[player]['lose']
+                assert total > 0
+            except:
+                print('0 game player found')
+                corruptedPlayerKeys.append(player)
+            else:
+                WL[player]['total'] = total
+        
+        for player in corruptedPlayerKeys:
+            del(WL[player])
 
             # adds the win percent to the WL dictionary
         for player in WL:
-            WL[player]['winPercent'] = round((WL[player]['win']/WL[player]['total'])*100,2)
+            WL[player]['winPercent'] = round(
+                (WL[player]['win']/WL[player]['total'])*100, 2)
 
         end = time.perf_counter()
         self.calcTime(start, end)
         return WL
-        
-    def judgePlayers(self, playerData):
-        accountBuyers = 0
-        ABList = []
-        smurfCount = 0
-        smurfList = []
-        totalGamesThreshold = 1000
-        winThreshold = 55
-
-        for player in playerData:
-            if playerData[player]['total'] <= totalGamesThreshold:
-                accountBuyers += 1
-                ABList.append(player)
-                if playerData[player]['winPercent'] >= winThreshold:
-                    smurfCount += 1
-                    smurfList.append(player)
-
 
     def findOutliers(self, stats):
-        
-        outliersWins = []
-        outliersTotal = []
-        sus = []
 
-        for player in self.playerData:
-            if player['winPercent'] >= stats['meanWins'] + stats['stdWins'] * 3:
-                outliersWins.append(player)
-            if player['total'] >= stats['meanTotal'] + stats['stdTotal'] * 3:
-                outliersTotal.append(player)
+        outliersWinsPositive = {}
+        outliersTotalPositive = {}
+        outliersWinsNegative = {}
+        outliersTotalNegative = {}
+        highWinLowGames = {}
+        lowWinLowGames = {}
 
-        for player in self.playerData:
-            if player in outliersTotal and player in outliersWins:
-                sus.append(player)
+        #player data is organized as 
+        #Key: Player ID
+        #Value: win , lose, total, winPercent
 
 
-    def getPlayerStats(self, playerData):
+        # 1.5x std dev encapsulated 85% of players
+        # meaning I'm 'flagging' anyone who's in the best and worst 15% of measured criterea
+        winPercentThreshold = stats['stdWins'] * 1.5
+        totalGamesThreshold = stats['stdTotal'] * 1.5
+
+
+        for player, values in self.playerData.items():
+            if values['winPercent'] >= stats['meanWins'] + winPercentThreshold:
+                outliersWinsPositive[player] = values
+            if values['total'] >= stats['meanTotal'] + totalGamesThreshold:
+                outliersTotalPositive[player] = values
+            if values['winPercent'] <= stats['meanWins'] - winPercentThreshold:
+                outliersWinsNegative[player] = values
+            if values['total'] <= stats['meanTotal'] - totalGamesThreshold:
+                outliersTotalNegative[player] = values
+
+        for player in self.playerData.keys():
+            if player in outliersWinsPositive and player in outliersTotalNegative:
+                highWinLowGames[player] = values
+            if player in outliersTotalNegative and player in outliersWinsNegative:
+                lowWinLowGames[player] = values
+
+        return {
+            "outlierWinsPositive": outliersWinsPositive,
+            "outlierTotalsPositive": outliersTotalPositive,
+            "outliersWinsNegative": outliersWinsNegative,
+            "outliersTotalNegative": outliersTotalNegative,
+            "highWinLowGames": highWinLowGames,
+            "lowWinLowGames": lowWinLowGames,
+            "winPercentThreshold" : winPercentThreshold,
+            "totalGamesThreshold" : totalGamesThreshold
+        }
+
+    def getPlayerStats(self):
         wins = []
         totalGames = []
 
-        for player in playerData:
-            wins.append(player['winPercent'])
-            totalGames.append(player['total'])
-        
+        for player, value in self.playerData.items():
+            wins.append(value['winPercent'])
+            totalGames.append(value['total'])
 
         meanWin = statistics.mean(wins)
         stdWins = statistics.stdev(wins)
@@ -177,24 +197,24 @@ class gameStats:
         stdTotal = statistics.stdev(totalGames)
 
         stats = {
-            "meanWin" : meanWin,
-            "meanTotal" : meanTotal,
-            "stdWins" : stdWins,
-            "stdTotal" : stdTotal
+            "meanWins": meanWin,
+            "meanTotal": meanTotal,
+            "stdWins": stdWins,
+            "stdTotal": stdTotal
         }
 
         return stats
 
     def getData(self):
         retData = {
-            "playerData" : self.playerData,
-            "APICalls" : self.APICalls,
-            "Times" : self.times
+            "playerData": self.playerData,
+            "Outliers": self.outlierData,
+            "APICalls": self.APICalls,
+            "Times": self.times
         }
 
         r = json.dumps(retData)
-        return json.loads(r)
-    
+        return r
+
     def getState(self):
         return self.curState
-        
