@@ -1,10 +1,11 @@
 import { SyncLoader } from "react-spinners";
 import { CircularProgress } from "@mui/material";
 
-const Spinner = () => {
+const Spinner = ({size}) => {
+
   return (
     <div className="centered">
-      <CircularProgress />
+      <CircularProgress size={size}/>
     </div>
   );
 };

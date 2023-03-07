@@ -1,8 +1,14 @@
 TODO:
-    1. OOP the python script and have it run through the constuctor.
+    1. Figure out how to run pyscript through JS
+        a. Must then do so IFF the user clicks the ✅ button on the verification page
+        b. must figure out how to get output back, as returns can only run inside a function
     2. Verify page needs to reroute to home when the ❌ is selected
     3. Error handling/404 page to a an invalid ID in VerifyPlayer
-    4. extract needed info from python script.
+    4. extract needed info from python script given the massive JSON
+    5. place a spinner component as the rendered item with a little warning that it takes a few minutes as the main item
+    6. when all data is retrieved & parsed, must then display desired data 
+        a. This will be a layout & formatting challenge
+    7. Draw charts
 
 
 Flow:

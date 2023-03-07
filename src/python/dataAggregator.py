@@ -105,7 +105,7 @@ class gameStats:
                 total = WL[player]['win'] + WL[player]['lose']
                 assert total > 0
             except:
-                print('0 game player found')
+                #print('0 game player found')
                 corruptedPlayerKeys.append(player)
             else:
                 WL[player]['total'] = total

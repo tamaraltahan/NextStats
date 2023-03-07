@@ -122,6 +122,10 @@ body {
   align-items: center;
 }
 
+.centerText{
+  text-align: center;
+}
+
 /*prevents arrows on input*/
 
 input::-webkit-outer-spin-button,
