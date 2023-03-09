@@ -1,3 +1,26 @@
+# What this is
+
+I'm learning to use React.js (using Next.js) to create a webpage and integrate my dota smurf detection script into a somewhat interactive webpage.
+
+
+The goal is to make an educated guess onto the amount of smurfs one plays against in their last 20 games with some basic criteria.
+Using some very basic statistics, the python script which I initially developed in frustration over my matches has been refined to lump players outside of 1.5 standard deviations of all parsable players into different lists.
+With these revisions I'm not explicitly calling any profiles out, but just lumping them if they're in the best or worst 15% of players from the basis of winrate (as a percent) and total games played.
+
+You can see my previous implementation [here](https://github.com/tamaraltahan/GameStats/blob/main/GameStats.py)
+
+### limitations
+
+The python script uses OpenDota's free API which is rate limited to 60 API calls a minute, 50k/mo so the time to run the script takes a few minutes (between 2.5-5).
+
+This is also a learning project for me so there will always be room for improvement and polish to add.
+I've learned front end concept, back end concepts, but merging the two is a new challenge in that now I need both pieces to work together.
+Also this is not an area I've spent time working on profesionally, but hope to work with in the future.
+
+
+Now for the boilerplate Next readme,
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
@@ -37,19 +60,3 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
-# What this is
-
-I'm learning to use React.js (using Next.js) to create a webpage and integrate my dota smurf detection script into a somewhat interactive webpage.
-
-
-The goal is to make an educated guess onto the amount of smurfs one plays against in their last *n* games with some basic criteria. Not so much an exersize into probability & statistics as it is just to ball park it with some criterea as win %, and number of games as the primary indicators.
-
-You can see my implementation [here](https://github.com/tamaraltahan/GameStats/blob/main/GameStats.py)
-
-### limitations
-
-I am rate limited by the API to 60 calls/minute and given I need to parse 20 matches each with 9 **other** players than the user, I cannot optimize the script to not take... a long time to put it lightly.
-
-Last time I ran my python script it took 15 minutes to finish one function - and 2.5 minutes for another, so yeah...
-
-This is also a learning project for me so there will always be room for improvement and polish to add.
