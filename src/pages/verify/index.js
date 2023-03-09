@@ -26,6 +26,7 @@ export default function Home() {
   useEffect( () => {
     if (isReady){
     const playerLink = `https://api.opendota.com/api/players/${query.id}`;
+    console.log('QUERY ID: ' + query.id)
     axios
       .get(playerLink)
       .then((response) => {
@@ -42,7 +43,7 @@ export default function Home() {
 
   return (
     <div>
-      {(!isLoading && post) ? <VerifyPlayer playerName={post.profile.personaname}/> : <Spinner /> }
+      {(!isLoading && post) ? <VerifyPlayer playerName={post.profile.personaname} playerID={query.id}/> : <Spinner /> }
     </div>
   )
 }

@@ -1,32 +1,39 @@
 import { setRevalidateHeaders } from "next/dist/server/send-payload";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import Spinner from "./Spinner";
 import axios from "axios";
 
 const verifyPlayer = (props) => {
   const [data, setData] = useState(null);
   const [verified, setVerified] = useState(false);
-  const router = useRouter();
 
   const handleConfirm = () => {
     setVerified(true);
-    axios.post('/verified')
-    .then(res => {
-      console.log(res.data)
-    })
-    .catch(err => {
-      console.log(err)
-    })
-    // fetch("/verified")
-    //   .then((res) => res)
-    //   .then((data) => setData(data))
-    //   .then(console.log(data));
+    axios.post(`http://localhost:3001/verified`, {id: props.playerID})
+      .then(res => {
+        console.log(res.data);
+      })
+      .catch(err => {
+        if (err.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(err.response.data);
+          console.log(err.response.status);
+          console.log(err.response.headers);
+        } else if (err.request) {
+          // The request was made but no response was received
+          console.log(err.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error', err.message);
+        }
+        console.log(err.config);
+      });
   };
+  
 
   const handleReject = () => {
-    //go home
-    fetch("/");
+    console.log("not done yet 😄")
   };
 
   return { verified } ? (
@@ -42,7 +49,7 @@ const verifyPlayer = (props) => {
   ) : (
     <div className="verifySection">
       <h1>
-        The script is running & will take 3-5 minutes to finish. Please bepatient 🙂
+        The script is running & will take 3-5 minutes to finish. Please be patient ⏱️
       </h1>
       <div className="centered">
         <Spinner size={large} />
