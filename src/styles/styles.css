@@ -75,6 +75,7 @@ body {
 
 .verifySection {
   padding-top: 2rem;
+  height: 100vh;
   text-align: center;
 }
 
@@ -116,7 +117,6 @@ body {
 
 
 .centered{
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -124,6 +124,15 @@ body {
 
 .centerText{
   text-align: center;
+}
+
+
+.TitleText{
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: 150px;
+  width: 100%;
 }
 
 /*prevents arrows on input*/

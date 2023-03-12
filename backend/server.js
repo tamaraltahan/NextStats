@@ -7,6 +7,7 @@ const app = express();
 const port = 3001;
 
 app.use(cors());
+app.use(express.json())
 
 app.get("/", (req, res) => {
   res.send("Waheblay");
@@ -14,8 +15,10 @@ app.get("/", (req, res) => {
 
 app.post("/verified", (req, res) => {
   console.log('script is now running')
+  //console.log("req body: " + req.body)
+  console.log("req: " + req.body.id)
   const id = req.body.id
-  exec(`python ./backend/python/job.py ${id}`, (error, stdout, stderr) => {
+  exec(`python ./gamestats/backend/python/job.py ${id}`, (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
       res.status(500).send(`Error running Python script: ${error.message}`);

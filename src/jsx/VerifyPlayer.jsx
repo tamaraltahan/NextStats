@@ -1,42 +1,34 @@
-import { setRevalidateHeaders } from "next/dist/server/send-payload";
-import { useEffect, useState } from "react";
-import Spinner from "./Spinner";
-import axios from "axios";
+import { useState } from 'react';
+import Spinner from './Spinner';
+import axios from 'axios';
 
 const verifyPlayer = (props) => {
-  const [data, setData] = useState(null);
   const [verified, setVerified] = useState(false);
 
   const handleConfirm = () => {
     setVerified(true);
-    axios.post(`http://localhost:3001/verified`, {id: props.playerID})
-      .then(res => {
+    axios
+      .post('http://localhost:3001/verified', { id: props.playerID })
+      .then((res) => {
         console.log(res.data);
       })
-      .catch(err => {
+      .catch((err) => {
         if (err.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          console.log(err.response.data);
-          console.log(err.response.status);
-          console.log(err.response.headers);
+          console.log(err.response);
         } else if (err.request) {
-          // The request was made but no response was received
           console.log(err.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.log('Error', err.message);
         }
         console.log(err.config);
       });
   };
-  
 
   const handleReject = () => {
-    console.log("not done yet 😄")
+    console.log('not done yet 😄');
   };
 
-  return { verified } ? (
+  return !verified ? (
     <div className="verifySection">
       <h1>Is your name {props.playerName}?</h1>
       <button className="vButtonAccept" onClick={handleConfirm}>
@@ -48,11 +40,11 @@ const verifyPlayer = (props) => {
     </div>
   ) : (
     <div className="verifySection">
-      <h1>
+      <h1 className="TitleText">
         The script is running & will take 3-5 minutes to finish. Please be patient ⏱️
       </h1>
       <div className="centered">
-        <Spinner size={large} />
+        <Spinner size="5rem" />
       </div>
     </div>
   );

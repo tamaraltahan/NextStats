@@ -4,9 +4,9 @@ import sys
 id = sys.argv[1]
 Data = gameStats(id)
 
-path = f"gamestats/src/python/PlayerEntries/{id}.txt"
+path = f"./gamestats/backend/python/PlayerEntries/{id}.json"
 
-f = open(path, "w")
+f = open(path, "w+")
 f.write(Data.getData())
 
 f.close()

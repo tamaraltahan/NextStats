@@ -11,9 +11,6 @@ import Spinner from "../../jsx/Spinner"
 
 const inter = Inter({ subsets: ['latin'] })
 
-
-//TODO: Get spinner component for loading
-
 export default function Home() {
 
   const [error, setError] = useState("")
@@ -21,12 +18,10 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   const {query, isReady} = useRouter()
-  //console.log(query.id)
 
   useEffect( () => {
     if (isReady){
     const playerLink = `https://api.opendota.com/api/players/${query.id}`;
-    console.log('QUERY ID: ' + query.id)
     axios
       .get(playerLink)
       .then((response) => {
@@ -38,7 +33,6 @@ export default function Home() {
         console.log('invalid PID')
       });
     }
-    //console.log("swag")
   }, [isReady])
 
   return (
