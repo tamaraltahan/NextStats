@@ -131,8 +131,12 @@ body {
   margin-left: auto;
   margin-right: auto;
   margin-top: auto;
-  margin-bottom: 150px;
+  margin-bottom: 100px;
   width: 100%;
+}
+
+.timer{
+  margin-bottom: 100px;
 }
 
 /*prevents arrows on input*/

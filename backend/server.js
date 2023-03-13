@@ -15,25 +15,23 @@ app.get("/", (req, res) => {
 
 app.post("/verified", (req, res) => {
   console.log('script is now running')
-  //console.log("req body: " + req.body)
-  console.log("req: " + req.body.id)
   const id = req.body.id
   exec(`python ./gamestats/backend/python/job.py ${id}`, (error, stdout, stderr) => {
     if (error) {
-      console.log(`error: ${error.message}`);
+     // console.log(`error: ${error.message}`);
       res.status(500).send(`Error running Python script: ${error.message}`);
       return;
     }
     if (stderr) {
-      console.log(`stderr: ${stderr}`);
+      // console.log(`stderr: ${stderr}`);
       res.status(500).send(`Error running Python script: ${stderr}`);
       return;
     }
-    console.log(`stdout: ${stdout}`);
+    // console.log(`stdout: ${stdout}`);
     res.send('Python Script completed')
   });
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  // console.log(`Example app listening on port ${port}`);
 });

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Spinner from './Spinner';
 import axios from 'axios';
+import Timer from './Timer';
 
 const verifyPlayer = (props) => {
   const [verified, setVerified] = useState(false);
@@ -43,6 +44,7 @@ const verifyPlayer = (props) => {
       <h1 className="TitleText">
         The script is running & will take 3-5 minutes to finish. Please be patient ⏱️
       </h1>
+      <Timer />
       <div className="centered">
         <Spinner size="5rem" />
       </div>

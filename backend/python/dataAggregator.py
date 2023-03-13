@@ -193,10 +193,43 @@ class gameStats:
     def getData(self):
         retData = {
             "playerData": self.playerData,
-            "Outliers": self.outlierData,
+            "outliers": self.outlierData,
             "APICalls": self.APICalls,
             "Times": self.times
         }
+
+        """
+        playerData:
+            {
+            win : int
+            lose : int
+            total : int
+            winPercent : float
+            }
+        
+        outliers:
+            {
+            outlierWinsPositive   : dictionary
+            outlierTotalsPositive,   : dictionary
+            outliersWinsNegative,  : dictionary
+            outliersTotalNegative,  : dictionary
+            highWinLowGames,  : dictionary
+            lowWinLowGames,  : dictionary
+            winPercentThreshold,  : dictionary
+            totalGamesThreshold,  : dictionary
+            }
+        
+        APICalls:
+            {
+            APICalls : int
+            }
+        
+        Times:
+            {
+            times : list
+            }
+
+        """
 
         r = json.dumps(retData)
         return r
