@@ -1,17 +1,19 @@
-import { useState } from 'react';
-import Spinner from './Spinner';
+import Loader from './Loader';
 import axios from 'axios';
-import Timer from './Timer';
+import { useState } from 'react';
+import VerifyMenu from './VerifyMenu';
+import { useRouter } from 'next/router';
 
-const verifyPlayer = (props) => {
+function VerifyPlayer(props) {
   const [verified, setVerified] = useState(false);
+  const router = useRouter();
 
   const handleConfirm = () => {
     setVerified(true);
     axios
       .post('http://localhost:3001/verified', { id: props.playerID })
       .then((res) => {
-        console.log(res.data);
+        router.push({pathname: `/playerStats?id=${props.playerID}`, query: {res}});
       })
       .catch((err) => {
         if (err.response) {
@@ -30,26 +32,10 @@ const verifyPlayer = (props) => {
   };
 
   return !verified ? (
-    <div className="verifySection">
-      <h1>Is your name {props.playerName}?</h1>
-      <button className="vButtonAccept" onClick={handleConfirm}>
-        ✅
-      </button>
-      <button className="vButtonReject" onClick={handleReject}>
-        ❌
-      </button>
-    </div>
+    <VerifyMenu playerName={props.playerName} onConfirm={handleConfirm} onReject={handleReject} />
   ) : (
-    <div className="verifySection">
-      <h1 className="TitleText">
-        The script is running & will take 3-5 minutes to finish. Please be patient ⏱️
-      </h1>
-      <Timer />
-      <div className="centered">
-        <Spinner size="5rem" />
-      </div>
-    </div>
+    <Loader />
   );
-};
+}
 
-export default verifyPlayer;
+export default VerifyPlayer;

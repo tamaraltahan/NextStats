@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 
-const Opening = props => {
-  const [post, setPost] = useState(null);
-  const [error, setError] = useState(null);
+const Opening = (props) => {
   const [ID, setID] = useState('');
   const router = useRouter();
 
@@ -24,10 +21,10 @@ const Opening = props => {
 
       <div className="inputContainer">
         <input
-          onWheel={e => e.target.blur()}
+          onWheel={(e) => e.target.blur()}
           id="pInput"
           type="number"
-          onChange={event => setID(event.target.value)}
+          onChange={(event) => setID(event.target.value)}
         />
 
         <button className="button-85" onClick={handleClick} placeholder="OpenDota ID" type="submit">

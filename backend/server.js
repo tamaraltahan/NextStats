@@ -28,10 +28,21 @@ app.post("/verified", (req, res) => {
       return;
     }
     // console.log(`stdout: ${stdout}`);
-    res.send('Python Script completed')
+    res.json(
+      {
+        "Completed": true
+      }
+    )
   });
 });
 
 app.listen(port, () => {
   // console.log(`Example app listening on port ${port}`);
+});
+
+
+app.get('/players/:username', (req, res) => {
+  const username = req.params.username;
+  const playerData = require(`./python/PlayerEntries/${username}.json`);
+  res.json(playerData)
 });

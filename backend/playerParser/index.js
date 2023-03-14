@@ -39,4 +39,3 @@ const getLowWinLowGames = () => {
     return data.outliers.lowWinLowGames
 }
 
-console.log(getOutliersHighWinLowGames())

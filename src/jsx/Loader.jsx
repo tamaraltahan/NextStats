@@ -1,13 +1,20 @@
 import Spinner from './Spinner';
-import React, { usestate } from 'react';
+import Timer from './Timer';
 
 const Loader = () => {
   return (
-    <div>
-      <h1 className="centerText">Loading. Script takes 3-5 minutes to run, please be patient</h1>
-      <Spinner size="large" />
+    <div className="verifySection">
+      <h1 className="TitleText">
+        The script is running & will take 3-5 minutes to finish. Please be patient ⏱️
+      </h1>
+      <Timer />
+      <div className="centered">
+        <Spinner size="5rem" />
+      </div>
     </div>
   );
 };
 
 export default Loader;
+
+
