@@ -30,5 +30,4 @@ yarn-error.log*
 
 # vercel
 .vercel
-src/python/job.ipynb
-src/python/job.ipynb
+backend/python/job.ipynb
