@@ -23,13 +23,7 @@ const PlayerList = (playerID) => {
           <li key={playerId}>
             Player ID: {playerId}
             <br />
-            Wins: {win}
-            <br />
-            Losses: {lose}
-            <br />
-            Total: {total}
-            <br />
-            Win Percentage: {winPercent}%
+            Wins: {win}, Losses: {lose}, Total: {total}, Win Percentage: {winPercent}%
           </li>
         );
       })}

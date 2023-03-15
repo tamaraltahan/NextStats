@@ -1,11 +1,9 @@
 TODO:
-    1. Verify page needs to reroute to home when the ❌ is selected
-    2. Error handling/404 page to a an invalid ID in VerifyPlayer
-    3. extract needed info from python script given the massive JSON
-    4. place a spinner component as the rendered item with a little warning that it takes a few minutes as the main item
-    5. when all data is retrieved & parsed, must then display desired data 
-        a. This will be a layout & formatting challenge
-    6. Draw charts
+    • Verify page needs to reroute to home when the ❌ is selected
+    • Error handling/404 page to a an invalid ID in VerifyPlayer
+    • when all data is retrieved & parsed, must then display desired data 
+        • This will be a layout & formatting challenge
+    • Draw charts
 
 
 Flow:

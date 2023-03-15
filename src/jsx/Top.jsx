@@ -12,9 +12,9 @@ const Top = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get(`http://localhost:3001/`);
-        // console.log(res);
+        console.log(res);
       } catch (e) {
-        // console.log(e);
+        console.log(e);
       }
     };
     fetchData();
