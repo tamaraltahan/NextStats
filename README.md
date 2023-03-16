@@ -1,5 +1,12 @@
 # What this is
 
+##Elevator pitch
+
+Did a smurf or account buyer just ruin your game? of course they did! Now you're wondering how many smurfs you're constantly playing against, and do I have a solution for you.
+With my handy dandy website, we can parse through the data of each player (with a public profile) & make some clever guesses on which players have the most impact in your games! With this python script, we look at the best **and** worst 15% of players and put them into different lists so you can judge for yourself who is actively ruining dota games!
+
+
+###but no really
 I'm learning to use React.js (using Next.js) to create a webpage and integrate my dota smurf detection script into a somewhat interactive webpage.
 
 
