@@ -176,10 +176,10 @@ class gameStats:
             wins.append(value['winPercent'])
             totalGames.append(value['total'])
 
-        meanWin = statistics.mean(wins)
-        stdWins = statistics.stdev(wins)
-        meanTotal = statistics.mean(totalGames)
-        stdTotal = statistics.stdev(totalGames)
+        meanWin = round(statistics.mean(wins),2)
+        stdWins = round(statistics.stdev(wins),2)
+        meanTotal = round(statistics.mean(totalGames),2)
+        stdTotal = round(statistics.stdev(totalGames),2)
 
         stats = {
             "meanWins": meanWin,
@@ -194,6 +194,7 @@ class gameStats:
         retData = {
             "playerData": self.playerData,
             "outliers": self.outlierData,
+            "Statistics": self.stats, 
             "APICalls": self.APICalls,
             "Times": self.times
         }
@@ -218,7 +219,14 @@ class gameStats:
             winPercentThreshold,  : dictionary
             totalGamesThreshold,  : dictionary
             }
-        
+
+        Statistics:
+            {
+            "meanWins": float
+            "meanTotal": float
+            "stdWins": float
+            "stdTotal": float
+            }
         APICalls:
             {
             APICalls : int

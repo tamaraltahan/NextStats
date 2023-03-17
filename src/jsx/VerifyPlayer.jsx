@@ -13,6 +13,7 @@ function VerifyPlayer(props) {
     axios
       .post('http://localhost:3001/verified', { id: props.playerID })
       .then((res) => {
+        console.log('routing to playerStats')
         router.push({pathname: `/playerStats?id=${props.playerID}`, query: {res}});
       })
       .catch((err) => {

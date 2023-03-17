@@ -46,9 +46,16 @@ let playerData;
 app.post('/setUserID/:userid', (req, res) => {
   userID = req.params.username;
   playerData = require(`./python/PlayerEntries/${userID}.json`);
-  res.send(`User ID set as ${userID}`)
+  res.json(
+    {
+      userID
+    }
+  )
 })
 
+app.get('/stats/:userid', (req, res) => {
+  res.json(playerData.statistics)
+})
 
 app.get('/players/:userid', (req, res) => {
   res.json(playerData.playerData)
