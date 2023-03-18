@@ -1,23 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import Loader from './Loader';
 
-const PlayerList = (playerID) => {
-  const [playerData, setPlayerData] = useState(null);
-
-  useEffect(() => {
-    fetch(`/players/${playerID}`)
-      .then((response) => response.json())
-      .then((data) => setPlayerData(data));
-  }, [playerID]);
-
-  if (!playerData) {
-    return <div>Loading...</div>;
-  }
-
-  const players = Object.keys(playerData);
-
-  return (
+const PlayerList = ({ playerData }) => {
+  return playerData ? (
     <ul>
-      {players.map((playerId) => {
+      {Object.keys(playerData).map((playerId) => {
         const { win, lose, total, winPercent } = playerData[playerId];
         return (
           <li key={playerId}>
@@ -28,6 +14,8 @@ const PlayerList = (playerID) => {
         );
       })}
     </ul>
+  ) : (
+    <Loader />
   );
 };
 

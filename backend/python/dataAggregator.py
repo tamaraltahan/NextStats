@@ -151,7 +151,7 @@ class gameStats:
             if values['total'] <= stats['meanTotal'] - totalGamesThreshold:
                 outliersTotalNegative[player] = values
 
-        for player in self.playerData.keys():
+        for player,values in self.playerData.items():
             if player in outliersWinsPositive and player in outliersTotalNegative:
                 highWinLowGames[player] = values
             if player in outliersTotalNegative and player in outliersWinsNegative:

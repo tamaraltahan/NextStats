@@ -1,13 +1,15 @@
 import Spinner from './Spinner';
 import Timer from './Timer';
 
-const Loader = () => {
+const Loader = ({ message }) => {
   return (
     <div className="verifySection">
-      <h1 className="TitleText">
-        The script is running & will take 3-5 minutes to finish. Please be patient ⏱️
-      </h1>
-      <Timer />
+      {message && (
+        <>
+          <h1 className="TitleText">{message}</h1>
+          <Timer />
+        </>
+      )}
       <div className="centered">
         <Spinner size="5rem" />
       </div>
@@ -16,5 +18,3 @@ const Loader = () => {
 };
 
 export default Loader;
-
-

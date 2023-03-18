@@ -13,8 +13,10 @@ function VerifyPlayer(props) {
     axios
       .post('http://localhost:3001/verified', { id: props.playerID })
       .then((res) => {
-        console.log('routing to playerStats')
-        router.push({pathname: `/playerStats?id=${props.playerID}`, query: {res}});
+        router.push({
+          pathname: `/playerStats/[playerId]`,
+          query: { playerId: props.playerID },
+        });
       })
       .catch((err) => {
         if (err.response) {
@@ -35,7 +37,7 @@ function VerifyPlayer(props) {
   return !verified ? (
     <VerifyMenu playerName={props.playerName} onConfirm={handleConfirm} onReject={handleReject} />
   ) : (
-    <Loader />
+    <Loader message="The script is running & will take 3-5 minutes to finish. Please be patient ⏱️" />
   );
 }
 

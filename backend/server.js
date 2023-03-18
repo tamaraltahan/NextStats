@@ -36,60 +36,23 @@ app.post("/verified", (req, res) => {
   });
 });
 
+// app.post("/verified", (req, res) => {
+//   res.json(
+//     {
+//     "response": true
+//     }
+//   )
+// });
+
 app.listen(port, () => {
   // console.log(`Example app listening on port ${port}`);
 });
 
-let userID;
-let playerData;
 
-app.post('/setUserID/:userid', (req, res) => {
-  userID = req.params.username;
-  playerData = require(`./python/PlayerEntries/${userID}.json`);
-  res.json(
-    {
-      userID
-    }
-  )
+app.get(`/playerData`, (req, res) => {
+  const pid = req.query.id
+  const jsonData = require(`./python/PlayerEntries/${pid}`)
+  res.json(jsonData)
 })
 
-app.get('/stats/:userid', (req, res) => {
-  res.json(playerData.statistics)
-})
-
-app.get('/players/:userid', (req, res) => {
-  res.json(playerData.playerData)
-});
-
-app.get('/outlierWinsPositive/:userid', (req, res) => {
-  res.json(playerData.outliers.outlierWinsPositive)
-});
-
-app.get('/outlierTotalsPositive/:userid', (req, res) => {
-  res.json(playerData.outliers.outlierTotalsPositive)
-});
-
-app.get('/outliersWinsNegative/:userid', (req, res) => {
-  res.json(playerData.outliers.outliersWinsNegative)
-});
-
-app.get('/outliersTotalNegative/:userid', (req, res) => {
-  res.json(playerData.outliers.outliersTotalNegative)
-});
-
-app.get('/highWinLowGames/:userid', (req, res) => {
-  res.json(playerData.outliers.outliersWinsNegative)
-});
-
-app.get('/lowWinLowGames/:userid', (req, res) => {
-  res.json(playerData.outliers.outliersTotalNegative)
-});
-
-app.get('/winPercentThreshold/:userid', (req, res) => {
-  res.json(playerData.outliers.winPercentThreshold)
-});
-
-app.get('/totalGamesThreshold/:userid', (req, res) => {
-  res.json(playerData.outliers.totalGamesThreshold)
-});
 
