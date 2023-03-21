@@ -6,10 +6,13 @@ const PlayerList = ({ playerData }) => {
       {Object.keys(playerData).map((playerId) => {
         const { win, lose, total, winPercent } = playerData[playerId];
         return (
-          <li key={playerId}>
-            Player ID: {playerId}
+          <li key={playerId} className="list">
+            Player ID: <span style={{marginBottom: "10px", display: "inline-block", fontWeight:"bold"}}>{playerId}</span>
             <br />
-            Wins: {win}, Losses: {lose}, Total: {total}, Win Percentage: {winPercent}%
+            <span style={{ color: '#1bb21b' }}>Wins: </span>
+            {win}, <span style={{ color: 'red' }}>Losses: </span> {lose},{' '}
+            <span style={{ color: '#00BFFF' }}>Total:</span> {total},{' '}
+            <span style={{ color: '#E4D00A' }}>Win Percentage:</span> {winPercent}%
           </li>
         );
       })}

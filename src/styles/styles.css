@@ -139,6 +139,49 @@ body {
   margin-bottom: 100px;
 }
 
+.statsBanner{
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  font-size: larger;
+}
+
+.statsGrid{
+  display: grid;
+  margin-left: 50px;
+  margin-right: 50px;
+  grid-template-columns: repeat(2, 1fr);
+  border: solid white 2px;
+  padding-left: 25px;
+  padding-top: 20px;
+}
+
+.playerItems{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  margin-bottom: 50px;
+  margin-top: 50px;
+  border: solid white 2px;
+  width: 855px;
+  text-align: left;
+  margin: auto;
+  margin-top: 50px;
+  padding-bottom: 20px;
+  margin-bottom: 50px;
+}
+
+.list{
+  list-style: none;
+  padding-top: 20px;
+}
+
+.outliers{
+  border: solid white 2px;
+}
+
 /*prevents arrows on input*/
 
 input::-webkit-outer-spin-button,

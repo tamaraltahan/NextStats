@@ -30,9 +30,11 @@ const StatsScreen = () => {
   if (!playerId || !data) return null;
   return (
     <div>
-      <div>
+      <div className="statsBanner">
         <p>
-          With a mean of {data.Statistics.meanTotal} games, & {data.Statistics.meanWins}% winrate
+          The mean total games played is:&nbsp;&nbsp; {data.Statistics.meanTotal} games
+          <br />
+          The mean win percent of players is:&nbsp;&nbsp;  {data.Statistics.meanWins}% winrate
         </p>
         <br />
         <p>
@@ -41,14 +43,17 @@ const StatsScreen = () => {
         </p>
       </div>
 
-      <PlayerList playerData={data.playerData} />
-      <div>
-        <OutlierList outlierData={data.outliers.outlierWinsPositive} name="Positive Winrate" />
+      <div className="playerItems">
+        <p style={{marginTop: "25px", fontSize:"large"}}>List of all available players & their stats:</p>
+        <PlayerList playerData={data.playerData}/>
+      </div>
+      <div className="statsGrid">
+        <OutlierList outlierData={data.outliers.outlierWinsPositive} name="Positive Winrate" className="outliers" />
         <OutlierList
           outlierData={data.outliers.outlierTotalsPositive}
           name="Positive Total Games"
         />
-        <OutlierList outlierData={data.outliers.outliersWinsNegative} name="Negative Winrate" />
+        <OutlierList outlierData={data.outliers.outliersWinsNegative} name="Negative Winrate" className="outliers"/>
         <OutlierList
           outlierData={data.outliers.outliersTotalNegative}
           name="Negative Total Games"
