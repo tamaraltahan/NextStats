@@ -26,6 +26,7 @@ class gameStats:
 
         self.stats = self.getPlayerStats()
         self.outlierData = self.findOutliers(self.stats)
+        self.removeDuplicates(self.playerData)
 
     def calcTime(self, start, end):
         total = end - start
@@ -133,52 +134,7 @@ class gameStats:
         end = time.perf_counter()
         self.calcTime(start, end)
         return WL
-
-    def findOutliers(self, stats):
-
-        outliersWinsPositive = {}
-        outliersTotalPositive = {}
-        outliersWinsNegative = {}
-        outliersTotalNegative = {}
-        highWinLowGames = {}
-        lowWinLowGames = {}
-
-        # player data is organized as
-        # Key: Player ID
-        # Value: win , lose, total, winPercent
-
-        # 1.5x std dev encapsulated 85% of players
-        # meaning I'm 'flagging' anyone who's in the best and worst 15% of measured criterea
-        winPercentThreshold = stats['stdWins'] * 1.5
-        totalGamesThreshold = stats['stdTotal'] * 1.5
-
-        for player, values in self.playerData.items():
-            if values['winPercent'] >= stats['meanWins'] + winPercentThreshold:
-                outliersWinsPositive[player] = values
-            if values['total'] >= stats['meanTotal'] + totalGamesThreshold:
-                outliersTotalPositive[player] = values
-            if values['winPercent'] <= stats['meanWins'] - winPercentThreshold:
-                outliersWinsNegative[player] = values
-            if values['total'] <= stats['meanTotal'] - totalGamesThreshold:
-                outliersTotalNegative[player] = values
-
-        for player, values in self.playerData.items():
-            if player in outliersWinsPositive and player in outliersTotalNegative:
-                highWinLowGames[player] = values
-            if player in outliersTotalNegative and player in outliersWinsNegative:
-                lowWinLowGames[player] = values
-
-        return {
-            "outlierWinsPositive": outliersWinsPositive,
-            "outlierTotalsPositive": outliersTotalPositive,
-            "outliersWinsNegative": outliersWinsNegative,
-            "outliersTotalNegative": outliersTotalNegative,
-            "highWinLowGames": highWinLowGames,
-            "lowWinLowGames": lowWinLowGames,
-            "winPercentThreshold": round(winPercentThreshold, 2),
-            "totalGamesThreshold": round(totalGamesThreshold)
-        }
-
+    
     def getPlayerStats(self):
         wins = []
         totalGames = []
@@ -201,6 +157,46 @@ class gameStats:
 
         return stats
 
+    def findOutliers(self, stats):
+
+        outliersWinsPositive = {}
+        outliersTotalPositive = {}
+        outliersWinsNegative = {}
+        outliersTotalNegative = {}
+        highWinLowGames = {}
+        lowWinLowGames = {}
+        winPercentThreshold = stats['stdWins'] * 1.2
+        totalGamesThreshold = stats['stdTotal'] * 1.2
+
+        for player, values in self.playerData.items():
+            if values['winPercent'] >= stats['meanWins'] + winPercentThreshold:
+                outliersWinsPositive[player] = values
+            if values['total'] >= stats['meanTotal'] + totalGamesThreshold:
+                outliersTotalPositive[player] = values
+            if values['winPercent'] <= stats['meanWins'] - winPercentThreshold:
+                outliersWinsNegative[player] = values
+            if values['total'] <= stats['meanTotal'] - totalGamesThreshold:
+                outliersTotalNegative[player] = values
+
+        for player1, values1 in self.playerData.items():
+            if player1 in outliersWinsPositive and player1 in outliersTotalNegative:
+                highWinLowGames[player1] = values1
+            if player1 in outliersTotalNegative and player1 in outliersWinsNegative:
+                lowWinLowGames[player1] = values1
+
+        return {
+            "outlierWinsPositive": outliersWinsPositive,
+            "outlierTotalsPositive": outliersTotalPositive,
+            "outliersWinsNegative": outliersWinsNegative,
+            "outliersTotalNegative": outliersTotalNegative,
+            "highWinLowGames": highWinLowGames,
+            "lowWinLowGames": lowWinLowGames,
+            "winPercentThreshold": round(winPercentThreshold, 2),
+            "totalGamesThreshold": round(totalGamesThreshold)
+        }
+
+
+
     def getData(self):
         retData = {
             "playerData": self.playerData,
@@ -214,8 +210,7 @@ class gameStats:
 
         r = json.dumps(retData)
         return r
-
-    # EXPERIMENTAL
+    
 
     def getPrevDataIfExists(self, id):
         path = f"./gamestats/backend/python/PlayerEntries/{id}.json"
@@ -226,6 +221,14 @@ class gameStats:
                 self.matchesAnalysed = data["matchesAnalyzed"]
                 self.playerData = data['playerData']
 
+    def setPlayerCount(self):
+        matches = len(self.matchesAnalysed)
+        return {
+            "totalPossible": matches*9,
+            "analyzed": len(self.playerData),
+            "analyzedPercent": len(self.playerData)/matches*9
+        }
+    # EXPERIMENTAL
 
     def getFullMatchHistory(self, id):
         url = f"https://api.opendota.com/api/players/{id}/matches"
@@ -237,40 +240,15 @@ class gameStats:
     def setNMatches(self, n):
         data = self.getFullMatchHistory()
         return data[:n]
+    
+    def removeDuplicates(self, d):
+        new_d = {}
+        for key, value in d.items():
+            if value not in new_d.values():
+                new_d[key] = value
+        return new_d
 
 
-
-    def setPlayerCount(self):
-        matches = len(self.matchesAnalysed)
-        return {
-            "totalPossible": matches*9,
-            "analyzed": len(self.playerData)
-        }
-
-
-"""
-if ./.../pid.json exists:
-    prevData = fs.open(pid.json)
-    fs.close()
-
-for match in matches:
-    if match not in matchesAnalysed:
-        playerList.add(player)
-        matchesAnalysed.add(matchID)
-
-for player in PIDs:
-    if player in 
-        
- 1. see if file exists
- 2. if file exists, read it into memory
- 3. run as normally BUT
-    a. if match has already been analyzed, skip
- 4. append all new data to existing data
-
- 
-
-
- """
 
 
 # json structure
