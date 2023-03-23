@@ -102,7 +102,7 @@ class gameStats:
         # would rather sacrifice some efficiency than deal with invalid requests
         for pID in pIDs:
             counter += 1
-            if counter == limit:
+            if counter == limit and len(pIDs) > 20:
                 counter = 0
                 time.sleep(20)
 
@@ -213,7 +213,7 @@ class gameStats:
     
 
     def getPrevDataIfExists(self, id):
-        path = f"./gamestats/backend/python/PlayerEntries/{id}.json"
+        path = f"./backend/python/PlayerEntries/{id}.json"
         if os.path.exists(path):
             with open(path, 'r') as file:
                 # Load the JSON data from the file

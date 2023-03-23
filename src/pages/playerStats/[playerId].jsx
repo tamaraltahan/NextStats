@@ -1,8 +1,10 @@
+"use client"
 import PlayerList from '../../jsx/PlayerList';
 import OutlierList from '@/jsx/OutlierList';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+
 
 const StatsScreen = () => {
   const [playerId, setPlayerID] = useState('');
@@ -34,7 +36,7 @@ const StatsScreen = () => {
         <p>
           The mean total games played is:&nbsp;&nbsp; {data.Statistics.meanTotal} games
           <br />
-          The mean win percent of players is:&nbsp;&nbsp;  {data.Statistics.meanWins}% winrate
+          The mean win percent of players is:&nbsp;&nbsp; {data.Statistics.meanWins}% winrate
         </p>
         <br />
         <p>
@@ -43,17 +45,28 @@ const StatsScreen = () => {
         </p>
       </div>
 
-      <div className="playerItems">
-        <p style={{marginTop: "25px", fontSize:"large"}}>List of all available players & their stats:</p>
-        <PlayerList playerData={data.playerData}/>
+      <div className="">
+        <p style={{ marginTop: '25px', fontSize: 'large', textAlign: 'center' }}>
+          List of all available players & their stats:
+        </p>
+        <PlayerList playerData={data.playerData} />
       </div>
+
       <div className="statsGrid">
-        <OutlierList outlierData={data.outliers.outlierWinsPositive} name="Positive Winrate" className="outliers" />
+        <OutlierList
+          outlierData={data.outliers.outlierWinsPositive}
+          name="Positive Winrate"
+          className="outliers"
+        />
         <OutlierList
           outlierData={data.outliers.outlierTotalsPositive}
           name="Positive Total Games"
         />
-        <OutlierList outlierData={data.outliers.outliersWinsNegative} name="Negative Winrate" className="outliers"/>
+        <OutlierList
+          outlierData={data.outliers.outliersWinsNegative}
+          name="Negative Winrate"
+          className="outliers"
+        />
         <OutlierList
           outlierData={data.outliers.outliersTotalNegative}
           name="Negative Total Games"

@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
 app.post("/verified", (req, res) => {
   // console.log('script is now running')
   const id = req.body.id
-  exec(`python ./gamestats/backend/python/job.py ${id}`, (error, stdout, stderr) => {
+  exec(`python ./backend/python/job.py ${id}`, (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
       res.status(500).send(`Error running Python script: ${error.message}`);
