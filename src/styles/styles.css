@@ -145,6 +145,8 @@ body {
   align-items: center;
   margin-top: 50px;
   font-size: larger;
+  padding-left: 50px;
+  padding-right: 50px;
 }
 
 .statsGrid{
@@ -180,6 +182,18 @@ body {
 
 .outliers{
   border: solid white 2px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 20px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 /*prevents arrows on input*/

@@ -159,14 +159,16 @@ class gameStats:
 
     def findOutliers(self, stats):
 
+        stdDev = 1.5
+
         outliersWinsPositive = {}
         outliersTotalPositive = {}
         outliersWinsNegative = {}
         outliersTotalNegative = {}
         highWinLowGames = {}
         lowWinLowGames = {}
-        winPercentThreshold = stats['stdWins'] * 1.2
-        totalGamesThreshold = stats['stdTotal'] * 1.2
+        winPercentThreshold = stats['stdWins'] * (stdDev)
+        totalGamesThreshold = stats['stdTotal'] * (stdDev - 0.5)
 
         for player, values in self.playerData.items():
             if values['winPercent'] >= stats['meanWins'] + winPercentThreshold:
@@ -223,8 +225,15 @@ class gameStats:
 
     def setPlayerCount(self):
         matches = len(self.matchesAnalysed)
+
+        numPlayers = len(self.playerData)
+        numOutliersTotal = len(self.outlierData)
+        numPossible = matches * 99
+        analyzedPercent = round(numPlayers/numPossible)
+        anonPercent = 100 - analyzedPercent
+
         return {
-            "totalPossible": matches*9,
+            "totalPossible": numPossible,
             "analyzed": len(self.playerData),
             "analyzedPercent": len(self.playerData)/matches*9
         }
@@ -242,12 +251,23 @@ class gameStats:
         return data[:n]
     
     def removeDuplicates(self, d):
-        new_d = {}
-        for key, value in d.items():
-            if value not in new_d.values():
-                new_d[key] = value
-        return new_d
+        res = {}
 
+        for key, value in d.items():
+            if value not in res.values():
+                res[key] = value
+
+        return res
+
+    def countUniqueOutliers(self):
+        pids = []
+
+        for sub in self.outlierData:
+            for player in sub.keys():
+                if player not in pids:
+                    pids.append(player)
+        print(pids)
+        return len(pids)
 
 
 
