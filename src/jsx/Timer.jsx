@@ -1,3 +1,4 @@
+'use client';
 const { useState, useEffect } = require('react');
 
 const Timer = () => {

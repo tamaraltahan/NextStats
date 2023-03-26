@@ -205,7 +205,7 @@ class gameStats:
             "outliers": self.outlierData,
             "Statistics": self.stats,
             "matchesAnalyzed": self.matchesAnalysed,
-            "analyzedPlayers": self.setPlayerCount(),
+            "analyzedPlayers": self.getAnalyses(),
             "APICalls": self.APICalls,
             "Times": self.times
         }
@@ -223,22 +223,47 @@ class gameStats:
                 self.matchesAnalysed = data["matchesAnalyzed"]
                 self.playerData = data['playerData']
 
-    def setPlayerCount(self):
+    def getAnalyses(self):
         matches = len(self.matchesAnalysed)
 
-        numPlayers = len(self.playerData)
-        numOutliersTotal = len(self.outlierData)
-        numPossible = matches * 99
-        analyzedPercent = round(numPlayers/numPossible)
-        anonPercent = 100 - analyzedPercent
+        #counts
+        countPlayers = len(self.playerData)
+        countOutliers = self.countUniqueIds()
+        countPossible = matches * 9
+        #percentages
+        analyzedPercent = round((countPlayers/countPossible) * 100,2)
+        anonPercent = round((100 - analyzedPercent),2)
+        outlierPercent = round(100*(countOutliers/countPlayers),2)
+
 
         return {
-            "totalPossible": numPossible,
-            "analyzed": len(self.playerData),
-            "analyzedPercent": len(self.playerData)/matches*9
+            "matches" : matches,
+            "countPlayers": countPlayers,
+            "countOutliers": countOutliers,
+            "countPossible": countPossible, 
+            "analyzedPercent": analyzedPercent,
+            "anonPercent": anonPercent,
+            "outlierPercent": outlierPercent
         }
-    # EXPERIMENTAL
+    
+    def removeDuplicates(self, d):
+        res = {}
 
+        for key, value in d.items():
+            if value not in res.values():
+                res[key] = value
+
+        return res
+    
+    def countUniqueIds(self):
+        uniques = {}
+        for key in self.outlierData:
+            if isinstance(self.outlierData[key], dict):
+                uniques.update(self.outlierData[key])
+        self.removeDuplicates(uniques)
+        return len(uniques)
+
+    # EXPERIMENTAL
     def getFullMatchHistory(self, id):
         url = f"https://api.opendota.com/api/players/{id}/matches"
         self.APICalls += 1
@@ -250,24 +275,14 @@ class gameStats:
         data = self.getFullMatchHistory()
         return data[:n]
     
-    def removeDuplicates(self, d):
-        res = {}
 
-        for key, value in d.items():
-            if value not in res.values():
-                res[key] = value
 
-        return res
-
-    def countUniqueOutliers(self):
-        pids = []
-
-        for sub in self.outlierData:
-            for player in sub.keys():
-                if player not in pids:
-                    pids.append(player)
-        print(pids)
-        return len(pids)
+    
+"""
+anon vs analyzed
+outliers vs normal
+scatterplot of all data pts in 2d
+"""
 
 
 
@@ -300,6 +315,17 @@ class gameStats:
             stdWins: float
             stdTotal: float
             }
+
+        matchesAnalyzed:
+            list
+
+        analyzedPlayers:
+            "matches" : int,
+            "countPlayers" : int,
+            "countOutliers" : int,
+            "analyzedPercent" : float,
+            "anonPercent" : float
+
         APICalls:
             {
             APICalls: int

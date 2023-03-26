@@ -1,3 +1,4 @@
+'use client';
 import Loader from './Loader';
 import axios from 'axios';
 import { useState } from 'react';

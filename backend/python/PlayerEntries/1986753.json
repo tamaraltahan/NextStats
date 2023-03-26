@@ -2,7 +2,7 @@
   "playerData": {
     "1272645580": { "win": 1049, "lose": 1083, "total": 2132, "winPercent": 49.2 },
     "65401743": { "win": 2484, "lose": 2492, "total": 4976, "winPercent": 49.92 },
-    "1986753": { "win": 3389, "lose": 3412, "total": 6801, "winPercent": 49.83 },
+    "1986753": { "win": 3391, "lose": 3416, "total": 6807, "winPercent": 49.82 },
     "67629762": { "win": 1672, "lose": 1710, "total": 3382, "winPercent": 49.44 },
     "115736897": { "win": 749, "lose": 859, "total": 1608, "winPercent": 46.58 },
     "333484092": { "win": 442, "lose": 394, "total": 836, "winPercent": 52.87 },
@@ -130,7 +130,7 @@
     "151496705": { "win": 613, "lose": 594, "total": 1207, "winPercent": 50.79 },
     "157979702": { "win": 1998, "lose": 1987, "total": 3985, "winPercent": 50.14 },
     "380682611": { "win": 1244, "lose": 1209, "total": 2453, "winPercent": 50.71 },
-    "272921000": { "win": 1868, "lose": 1889, "total": 3757, "winPercent": 49.72 },
+    "272921000": { "win": 1871, "lose": 1889, "total": 3760, "winPercent": 49.76 },
     "10967232": { "win": 3508, "lose": 3519, "total": 7027, "winPercent": 49.92 },
     "872954385": { "win": 185, "lose": 184, "total": 369, "winPercent": 50.14 },
     "402936816": { "win": 1170, "lose": 1041, "total": 2211, "winPercent": 52.92 },
@@ -142,7 +142,25 @@
     "19194458": { "win": 1274, "lose": 1236, "total": 2510, "winPercent": 50.76 },
     "5776031": { "win": 2627, "lose": 2833, "total": 5460, "winPercent": 48.11 },
     "181211680": { "win": 2259, "lose": 2388, "total": 4647, "winPercent": 48.61 },
-    "95162549": { "win": 3136, "lose": 2884, "total": 6020, "winPercent": 52.09 }
+    "95162549": { "win": 3136, "lose": 2884, "total": 6020, "winPercent": 52.09 },
+    "114872498": { "win": 5524, "lose": 5759, "total": 11283, "winPercent": 48.96 },
+    "83937024": { "win": 1495, "lose": 1445, "total": 2940, "winPercent": 50.85 },
+    "122745258": { "win": 2145, "lose": 2151, "total": 4296, "winPercent": 49.93 },
+    "217919818": { "win": 2569, "lose": 2578, "total": 5147, "winPercent": 49.91 },
+    "133228882": { "win": 2024, "lose": 1987, "total": 4011, "winPercent": 50.46 },
+    "117871710": { "win": 142, "lose": 141, "total": 283, "winPercent": 50.18 },
+    "100793645": { "win": 1689, "lose": 1662, "total": 3351, "winPercent": 50.4 },
+    "861613060": { "win": 308, "lose": 313, "total": 621, "winPercent": 49.6 },
+    "29596401": { "win": 3189, "lose": 3250, "total": 6439, "winPercent": 49.53 },
+    "100422903": { "win": 1894, "lose": 1781, "total": 3675, "winPercent": 51.54 },
+    "213844263": { "win": 938, "lose": 936, "total": 1874, "winPercent": 50.05 },
+    "866552252": { "win": 802, "lose": 750, "total": 1552, "winPercent": 51.68 },
+    "189170082": { "win": 805, "lose": 829, "total": 1634, "winPercent": 49.27 },
+    "207741935": { "win": 1170, "lose": 1175, "total": 2345, "winPercent": 49.89 },
+    "132791580": { "win": 3532, "lose": 3577, "total": 7109, "winPercent": 49.68 },
+    "409214671": { "win": 1645, "lose": 1579, "total": 3224, "winPercent": 51.02 },
+    "3602": { "win": 2366, "lose": 2367, "total": 4733, "winPercent": 49.99 },
+    "223840321": { "win": 1552, "lose": 1598, "total": 3150, "winPercent": 49.27 }
   },
   "outliers": {
     "outlierWinsPositive": {
@@ -153,6 +171,7 @@
       "251267045": { "win": 118, "lose": 93, "total": 211, "winPercent": 55.92 }
     },
     "outlierTotalsPositive": {
+      "1986753": { "win": 3391, "lose": 3416, "total": 6807, "winPercent": 49.82 },
       "26932057": { "win": 3493, "lose": 3512, "total": 7005, "winPercent": 49.86 },
       "61682174": { "win": 6497, "lose": 6385, "total": 12882, "winPercent": 50.43 },
       "123063932": { "win": 6447, "lose": 6658, "total": 13105, "winPercent": 49.19 },
@@ -168,13 +187,17 @@
       "33893358": { "win": 6306, "lose": 6362, "total": 12668, "winPercent": 49.78 },
       "46108135": { "win": 3835, "lose": 3758, "total": 7593, "winPercent": 50.51 },
       "10967232": { "win": 3508, "lose": 3519, "total": 7027, "winPercent": 49.92 },
-      "129479463": { "win": 3857, "lose": 3921, "total": 7778, "winPercent": 49.59 }
+      "129479463": { "win": 3857, "lose": 3921, "total": 7778, "winPercent": 49.59 },
+      "114872498": { "win": 5524, "lose": 5759, "total": 11283, "winPercent": 48.96 },
+      "132791580": { "win": 3532, "lose": 3577, "total": 7109, "winPercent": 49.68 }
     },
     "outliersWinsNegative": {
       "215736657": { "win": 564, "lose": 698, "total": 1262, "winPercent": 44.69 }
     },
     "outliersTotalNegative": {
+      "333484092": { "win": 442, "lose": 394, "total": 836, "winPercent": 52.87 },
       "104510782": { "win": 330, "lose": 343, "total": 673, "winPercent": 49.03 },
+      "162552394": { "win": 427, "lose": 387, "total": 814, "winPercent": 52.46 },
       "364853614": { "win": 276, "lose": 82, "total": 358, "winPercent": 77.09 },
       "184802358": { "win": 363, "lose": 410, "total": 773, "winPercent": 46.96 },
       "85208912": { "win": 96, "lose": 65, "total": 161, "winPercent": 59.63 },
@@ -184,7 +207,9 @@
       "142564370": { "win": 343, "lose": 394, "total": 737, "winPercent": 46.54 },
       "251267045": { "win": 118, "lose": 93, "total": 211, "winPercent": 55.92 },
       "146723045": { "win": 386, "lose": 404, "total": 790, "winPercent": 48.86 },
-      "872954385": { "win": 185, "lose": 184, "total": 369, "winPercent": 50.14 }
+      "872954385": { "win": 185, "lose": 184, "total": 369, "winPercent": 50.14 },
+      "117871710": { "win": 142, "lose": 141, "total": 283, "winPercent": 50.18 },
+      "861613060": { "win": 308, "lose": 313, "total": 621, "winPercent": 49.6 }
     },
     "highWinLowGames": {
       "364853614": { "win": 276, "lose": 82, "total": 358, "winPercent": 77.09 },
@@ -192,18 +217,27 @@
       "251267045": { "win": 118, "lose": 93, "total": 211, "winPercent": 55.92 }
     },
     "lowWinLowGames": {},
-    "winPercentThreshold": 4.4,
-    "totalGamesThreshold": 3019
+    "winPercentThreshold": 4.16,
+    "totalGamesThreshold": 2970
   },
-  "Statistics": { "meanWins": 50.69, "meanTotal": 3828.71, "stdWins": 2.93, "stdTotal": 3019.31 },
+  "Statistics": { "meanWins": 50.62, "meanTotal": 3821, "stdWins": 2.77, "stdTotal": 2969.88 },
   "matchesAnalyzed": [
     7070482090, 7070234487, 7069602201, 7069392530, 7069178498, 7069132268, 7069090696, 7069051787,
     7068855651, 7068833809, 7068805863, 7068769634, 7068729489, 7066082082, 7065988460, 7064175543,
     7064126249, 7062760659, 7062702295, 7061209129, 7071659629, 7071629882, 7071592546, 7071709273,
     7071904786, 7071878142, 7071736242, 7072130091, 7072080981, 7072026865, 7073578140, 7073396895,
-    7073355836, 7074672627, 7074635010, 7076546898, 7076353824, 7075021831, 7074732484
+    7073355836, 7074672627, 7074635010, 7076546898, 7076353824, 7075021831, 7074732484, 7077904523,
+    7078214361, 7078140917, 7078089862, 7078040976, 7078007708
   ],
-  "analyzedPlayers": { "totalPossible": 351, "analyzed": 143, "analyzedPercent": 33.0 },
+  "analyzedPlayers": {
+    "matches": 45,
+    "countPlayers": 161,
+    "countOutliers": 37,
+    "countPossible": 405,
+    "analyzedPercent": 39.75,
+    "anonPercent": 60.25,
+    "outlierPercent": 22.98
+  },
   "APICalls": 1,
-  "Times": [8.399947546422482e-6, 9.00006853044033e-7]
+  "Times": [9.299954399466515e-6, 1.100008375942707e-6]
 }

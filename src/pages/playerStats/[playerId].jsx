@@ -4,13 +4,13 @@ import OutlierList from '@/jsx/OutlierList';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { Spacer, Card, Text, Container } from '@nextui-org/react';
-import MyPlot from '@/jsx/PiePlot';
+import { Spacer, Card, Text, Container, Grid } from '@nextui-org/react';
+import MyPiePlot from '../../jsx/PiePlot';
+import MyScatterPlot from '../../jsx/ScatterPlot';
 
 const StatsScreen = () => {
   const [playerId, setPlayerID] = useState('');
   const [data, setData] = useState(null);
-
   const router = useRouter();
   useEffect(() => {
     setPlayerID(router.query.playerId);
@@ -29,6 +29,7 @@ const StatsScreen = () => {
       fetchData();
     }
   }, [playerId]);
+
   if (!playerId || !data) return null;
   return (
     <div>
@@ -36,7 +37,7 @@ const StatsScreen = () => {
         <Container>
           <Card
             className="centered"
-            css={{ mw: '800px', paddingLeft: '50px', paddingRight: '50px' }}
+            css={{ mw: '900px', paddingLeft: '50px', paddingRight: '50px' }}
           >
             <Text>
               The mean total games played is:&nbsp;&nbsp; {data.Statistics.meanTotal} games
@@ -52,14 +53,11 @@ const StatsScreen = () => {
             <Text>
               Filtered players will have a winrate less than{' '}
               <span style={{ fontWeight: 'bold' }}>
-                {data.Statistics.meanWins - data.outliers.winPercentThreshold}%
+                {(data.Statistics.meanWins - data.outliers.winPercentThreshold).toFixed(2)}%
               </span>{' '}
               or greater than{' '}
               <span style={{ fontWeight: 'bold' }}>
-                {Math.round(data.Statistics.meanWins + data.outliers.winPercentThreshold).toFixed(
-                  2
-                )}
-                %
+                {(data.Statistics.meanWins + data.outliers.winPercentThreshold).toFixed(2)}%
               </span>
               <br />
               and a total game count of less than{' '}
@@ -70,6 +68,16 @@ const StatsScreen = () => {
               <span style={{ fontWeight: 'bold' }}>
                 {Math.round(data.Statistics.meanTotal + data.outliers.totalGamesThreshold) + 1}
               </span>
+            </Text>
+
+            <Spacer />
+            <Text css={{ textAlign: 'center' }}>
+              <Text color='warning' weight='extrabold'>
+                Disclaimer:
+              </Text>
+              Since the standard deviation of total games is very high, outliers for total games
+              will be outside of <span style={{ fontWeight: 'bold' }}>1</span> stdev, while the win
+              rate is at 1.5 stdevs
             </Text>
           </Card>
         </Container>
@@ -87,13 +95,8 @@ const StatsScreen = () => {
 
       <div className="statsBanner">
         <Container>
-          <Card
-            className="centered"
-            css={{ mw: '800px', padding:'15px'}}
-          >
-            <Text>
-              Lists of players filtered as outliers
-            </Text>
+          <Card className="centered" css={{ mw: '800px', padding: '15px' }}>
+            <Text>Lists of players filtered as outliers</Text>
           </Card>
         </Container>
       </div>
@@ -134,9 +137,58 @@ const StatsScreen = () => {
           </Card.Body>
         </Card>
       </div>
-        <MyPlot />
+
+      <Grid.Container gap={2} justify="center">
+        <Grid>
+          <MyPiePlot
+            title="Anonymous Profiles"
+            axes1={data.analyzedPlayers.countPlayers}
+            axes2={data.analyzedPlayers.countPossible}
+            label1="Public"
+            label2="Anonymous"
+          />
+        </Grid>
+
+        <MyPiePlot
+          title="Outliers to Normal Players"
+          axes1={data.analyzedPlayers.countOutliers}
+          axes2={data.analyzedPlayers.countPlayers}
+          label1="Outliers"
+          label2="Normal"
+        />
+      </Grid.Container>
+      <div className="centered">
+        <MyScatterPlot title="Total Games to Win Percent" x={data.totals} y={data.winPercents} />
+      </div>
     </div>
   );
 };
 
 export default StatsScreen;
+
+/*
+
+          const piData1 = {
+            "title" : "Anonymous Profiles",
+            "axes": {
+              "a": res.data.analyzedPlayers.countPlayers,
+              "b": res.datadata.analyzedPlayers.countPossible,
+            },
+            "labels":{
+              'a': 'Public',
+              'b': 'Anonymous'
+            } 
+          }
+        
+          const piData2 = {
+            "title" : "Outliers to Normal Profiles",
+            "axes": {
+              "a": res.data.analyzedPlayers.countPlayers,
+              "b": res.data.analyzedPlayers.countOutliers,
+            },
+            "labels":{
+              'a': 'Normal',
+              'b': 'Outlier'
+            } 
+          }
+*/

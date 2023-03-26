@@ -45,6 +45,7 @@ const OutlierList = ({ name, outlierData }) => {
         <Badge color={'secondary'}>{name}</Badge>
       </div>
       <Table
+        shadow={false}
         aria-label="User Data Table"
         css={{ height: '350px' }}
         sortDescriptor={list.sortDescriptor}
