@@ -1,5 +1,6 @@
 import '@/styles/globals.css'
 import { createTheme, NextUIProvider } from '@nextui-org/react';
+// eslint-disable-next-line no-unused-vars
 import styles from '../styles/styles.css'
 
 

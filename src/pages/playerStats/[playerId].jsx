@@ -11,7 +11,9 @@ import MyScatterPlot from '../../jsx/ScatterPlot';
 const StatsScreen = () => {
   const [playerId, setPlayerID] = useState('');
   const [data, setData] = useState(null);
+  const [userName, setUserName] = useState('');
   const router = useRouter();
+
   useEffect(() => {
     setPlayerID(router.query.playerId);
   }, [router.query]);
@@ -30,10 +32,28 @@ const StatsScreen = () => {
     }
   }, [playerId]);
 
+  useEffect(() => {
+    const playerLink = `https://api.opendota.com/api/players/${playerId}`;
+
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(playerLink);
+        setUserName(res.data.profile.personaname);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [playerId]);
+
   if (!playerId || !data) return null;
   return (
     <div>
       <div className="statsBanner">
+        <Text h2 className="centered">
+          Showing outliers for {userName}
+        </Text>
+        <Spacer />
         <Container>
           <Card
             className="centered"
@@ -72,7 +92,7 @@ const StatsScreen = () => {
 
             <Spacer />
             <Text css={{ textAlign: 'center' }}>
-              <Text color='warning' weight='extrabold'>
+              <Text color="warning" weight="extrabold">
                 Disclaimer:
               </Text>
               Since the standard deviation of total games is very high, outliers for total games
@@ -106,7 +126,7 @@ const StatsScreen = () => {
         <Card css={{ mw: '80%' }}>
           <Card.Body>
             {/* map outlier lists */}
-            <div className="grid-container" style={{ gap: '50px' }}>
+            <div className="grid-container">
               <OutlierList
                 outlierData={data.outliers.outlierWinsPositive}
                 name="Positive Winrate"

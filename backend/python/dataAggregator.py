@@ -262,7 +262,7 @@ class gameStats:
                 uniques.update(self.outlierData[key])
         self.removeDuplicates(uniques)
         return len(uniques)
-
+    
     # EXPERIMENTAL
     def getFullMatchHistory(self, id):
         url = f"https://api.opendota.com/api/players/{id}/matches"

@@ -21,18 +21,18 @@ function VerifyPlayer(props) {
       })
       .catch((err) => {
         if (err.response) {
-          console.log(err.response);
+          // console.log(err.response);
         } else if (err.request) {
-          console.log(err.request);
+          // console.log(err.request);
         } else {
-          console.log('Error', err.message);
+          // console.log('Error', err.message);
         }
-        console.log(err.config);
+        // console.log(err.config);
       });
   };
 
   const handleReject = () => {
-    console.log('not done yet 😄');
+    router.back();
   };
 
   return !verified ? (

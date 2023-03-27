@@ -1,5 +1,5 @@
 import Loader from './Loader';
-import { Container, Table, useCollator, useAsyncList, Badge } from '@nextui-org/react';
+import { Container, Table, useCollator, useAsyncList, Badge, Link } from '@nextui-org/react';
 
 const OutlierList = ({ name, outlierData }) => {
   const collator = useCollator({ numeric: true });
@@ -71,7 +71,17 @@ const OutlierList = ({ name, outlierData }) => {
         <Table.Body items={list.items} loadingState={list.loadingState} onLoadMore={() => {}}>
           {(item) => (
             <Table.Row key={item.id}>
-              {(columnKey) => <Table.Cell>{item[columnKey]}</Table.Cell>}
+              {(columnKey) => (
+                <Table.Cell>
+                  {columnKey === 'id' ? (
+                    <Link href={`https://www.opendota.com/players/${item[columnKey]}`}>
+                      {item[columnKey]}
+                    </Link>
+                  ) : (
+                    item[columnKey]
+                  )}
+                </Table.Cell>
+              )}
             </Table.Row>
           )}
         </Table.Body>
