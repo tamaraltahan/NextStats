@@ -3,9 +3,8 @@ import requests
 import json
 import time
 import statistics
-
 import os
-
+import codecs
 
 class gameStats:
 
@@ -13,16 +12,24 @@ class gameStats:
     isRunning = False
     times = []
     matchesAnalysed = []
-
+    
+    # initialized in constructor
+    """
+    id: entered player ID
+    PIDs: aggregated list of player ID's
+    stats: dict
+    outlierData: dict
+    """
+     
     def __init__(self, id):
         self.id = id
         self.getPrevDataIfExists(id)
         data = self.openRecentMatches()
-        self.PIDs = self.getPlayersFromMatches(data)
+        self.userInfo = self.getPlayersFromMatches(data)
         if not hasattr(self, 'playerData'):
-            self.playerData = self.getPlayerWinRate(self.PIDs)
+            self.playerData = self.getPlayerWinRate(self.userInfo)
         else:
-            self.playerData.update(self.getPlayerWinRate(self.PIDs))
+            self.playerData.update(self.getPlayerWinRate(self.userInfo))
 
         self.stats = self.getPlayerStats()
         self.outlierData = self.findOutliers(self.stats)
@@ -52,11 +59,11 @@ class gameStats:
             data (JSON): JSON object of thee recentMatches API call
 
         Returns:
-            pIDs: A list of non-duplicate player ID's in 20 game match history.
+            userInfo: A dictionary of non-duplicate player ID's in 20 game match history with usernames and ranks as values
         """
         match_ids = []
         players = []
-        pIDs = []
+        userInfo = dict()
 
         # Loop through the matches and add the match ids to the list
         for match in data:
@@ -70,76 +77,84 @@ class gameStats:
                 r = requests.get(url)
                 data = r.json()
                 players.append(data['players'])
+                ranks = [player['rank_tier'] for player in data['players']]
                 self.matchesAnalysed.append(match)
 
         # Loop through the player ids and add them to the list
         # Conditions: not null, is not the same as player (user), and is not already in the list
         for player in players:
             for p in player:
-                if p['account_id'] and p['account_id'] != self.id and p['account_id'] not in pIDs:
-                    pIDs.append(p['account_id'])
+                if p['account_id'] and p['account_id'] != self.id and p['account_id'] not in userInfo.keys():
+                    userInfo[p['account_id']] = {}
+                    userInfo[p['account_id']]['userName'] = p['personaname'].encode().decode('unicode_escape')
+                    userInfo[p['account_id']]['rank'] = p['rank_tier']
+                    
         end = time.perf_counter()
         self.calcTime(start, end)
-        return pIDs
-
-    def getPlayerWinRate(self, pIDs):
+        return userInfo
+    
+    
+    
+    def getPlayerWinRate(self, userInfo):
         """
         Gets the winrate of all available players
 
         Args:
-            pIDs (List): a list of player ID's
+            userInfo (dict): Dictionary of player IDs, usernames, and ranks
 
 
         Returns:
-            WL (dict): Dictionary containing player's wins, losses, total games, and winrate percent
+            userInfo (dict): Dictionary recieved appending with sub dictionary containing player's wins, losses, total games, winrate percent
         """
         start = time.perf_counter()
-        WL = {}
         counter = 0
-        limit = len(pIDs)//4
+        limit = len(userInfo)//4
+        APILimiter = 20
         # Loop through the player ids and get the win/loss
         # this bit is just to keep from hitting the rate limit of API calls
         # would rather sacrifice some efficiency than deal with invalid requests
-        for pID in pIDs:
+        for pID in userInfo.keys():
             counter += 1
-            if counter == limit and len(pIDs) > 20:
+            if counter == limit and len(userInfo) > APILimiter:
                 counter = 0
                 time.sleep(20)
+                
 
             url = 'https://api.opendota.com/api/players/{}/wl'.format(pID)
             self.APICalls += 1
             r = requests.get(url)
             data = r.json()
-            WL[pID] = data
+            userInfo[pID].update({'win': int(data['win']), 'lose': int(data['lose'])})
 
         corruptedPlayerKeys = []
-        for player in WL:
+        for player in userInfo:
             try:
-                total = WL[player]['win'] + WL[player]['lose']
+                total = userInfo[player]['win'] + userInfo[player]['lose']
                 assert total > 0
             except:
-                # print('0 game player found')
                 corruptedPlayerKeys.append(player)
             else:
-                WL[player]['total'] = total
+                userInfo[player]['total'] = total
 
         for player in corruptedPlayerKeys:
-            del (WL[player])
+            del (userInfo[player])
 
             # adds the win percent to the WL dictionary
-        for player in WL:
-            WL[player]['winPercent'] = round(
-                (WL[player]['win']/WL[player]['total'])*100, 2)
+        for player in userInfo:
+            userInfo[player]['winPercent'] = round(
+                (userInfo[player]['win']/userInfo[player]['total'])*100, 2)
 
         end = time.perf_counter()
         self.calcTime(start, end)
-        return WL
-    
+        return userInfo
+
     def getPlayerStats(self):
         wins = []
         totalGames = []
 
         for player, value in self.playerData.items():
+            # wins.append(value.get('winPercent', 0))
+            # totalGames.append(value.get('total', 0))
             wins.append(value['winPercent'])
             totalGames.append(value['total'])
 
@@ -197,8 +212,6 @@ class gameStats:
             "totalGamesThreshold": round(totalGamesThreshold)
         }
 
-
-
     def getData(self):
         retData = {
             "playerData": self.playerData,
@@ -210,51 +223,60 @@ class gameStats:
             "Times": self.times
         }
 
-        r = json.dumps(retData)
-        return r
-    
+        # r = json.dumps(retData, ensure_ascii=False)
+        return retData
 
     def getPrevDataIfExists(self, id):
         path = f"./backend/python/PlayerEntries/{id}.json"
         if os.path.exists(path):
-            with open(path, 'r') as file:
+            with open(path, 'r', encoding='utf8') as file:
                 # Load the JSON data from the file
-                data = json.loads(file.read())
-                self.matchesAnalysed = data["matchesAnalyzed"]
-                self.playerData = data['playerData']
+                try:
+                    data = json.loads(file.read())
+                    self.matchesAnalysed = data["matchesAnalyzed"]
+                    self.playerData = data['playerData']
+                except json.decoder.JSONDecodeError:
+                    print('Error decoding JSON from file')
+        else:
+            print('file DNE for some reason')
+
 
     def getAnalyses(self):
         matches = len(self.matchesAnalysed)
 
-        #counts
+        # counts
         countPlayers = len(self.playerData)
         countOutliers = self.countUniqueIds()
         countPossible = matches * 9
-        #percentages
-        analyzedPercent = round((countPlayers/countPossible) * 100,2)
-        anonPercent = round((100 - analyzedPercent),2)
-        outlierPercent = round(100*(countOutliers/countPlayers),2)
-
+        # percentages
+        analyzedPercent = round((countPlayers/countPossible) * 100, 2)
+        anonPercent = round((100 - analyzedPercent), 2)
+        outlierPercent = round(100*(countOutliers/countPlayers), 2)
 
         return {
-            "matches" : matches,
+            "matches": matches,
             "countPlayers": countPlayers,
             "countOutliers": countOutliers,
-            "countPossible": countPossible, 
+            "countPossible": countPossible,
             "analyzedPercent": analyzedPercent,
             "anonPercent": anonPercent,
             "outlierPercent": outlierPercent
         }
-    
+
     def removeDuplicates(self, d):
         res = {}
+        temp = {}
 
         for key, value in d.items():
-            if value not in res.values():
+            if key not in temp:
+                temp[key] = 1
+                res[key] = value
+            else:
+                temp[key] += 1
                 res[key] = value
 
         return res
-    
+
     def countUniqueIds(self):
         uniques = {}
         for key in self.outlierData:
@@ -263,6 +285,16 @@ class gameStats:
         self.removeDuplicates(uniques)
         return len(uniques)
     
+    
+    def decodeUsernames(self, encodedString):
+        return codecs.decode(encodedString, 'unicode_escape')
+        
+      
+    def saveData(self):
+      path = f"./backend/python/PlayerEntries/{self.id}.json"
+      with open(path, 'w', encoding='utf8') as file:
+        json.dump(self.playerData, file, ensure_ascii=False)
+
     # EXPERIMENTAL
     def getFullMatchHistory(self, id):
         url = f"https://api.opendota.com/api/players/{id}/matches"
@@ -274,15 +306,6 @@ class gameStats:
     def setNMatches(self, n):
         data = self.getFullMatchHistory()
         return data[:n]
-    
-
-
-    
-"""
-anon vs analyzed
-outliers vs normal
-scatterplot of all data pts in 2d
-"""
 
 
 
@@ -290,6 +313,8 @@ scatterplot of all data pts in 2d
 """
         playerData:
             {
+            userName: string
+            rank: int
             win: int
             lose: int
             total: int
