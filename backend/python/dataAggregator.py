@@ -13,6 +13,9 @@ class gameStats:
     times = []
     matchesAnalysed = []
     
+    playerMatchIDs = dict()
+    gamesRuined = 0
+    
     # initialized in constructor
     """
     id: entered player ID
@@ -34,6 +37,7 @@ class gameStats:
         self.stats = self.getPlayerStats()
         self.outlierData = self.findOutliers(self.stats)
         self.removeDuplicates(self.playerData)
+        self.gamesRuined = self.countMatchesWithOutliers()
 
     def calcTime(self, start, end):
         total = end - start
@@ -42,9 +46,7 @@ class gameStats:
     def openRecentMatches(self):
         url = 'https://api.opendota.com/api/players/{}/recentMatches'.format(self.id)
         self.APICalls += 1
-        # Get the data from the API
         r = requests.get(url)
-        # Convert the data to a JSON object
         recents = r.json()
         return recents
 
@@ -64,12 +66,10 @@ class gameStats:
         match_ids = []
         players = []
         userInfo = dict()
-
-        # Loop through the matches and add the match ids to the list
+        
         for match in data:
             match_ids.append(match['match_id'])
 
-        # Loop through the match ids and get the player ids
         for match in match_ids:
             if match not in self.matchesAnalysed:
                 url = 'https://api.opendota.com/api/matches/{}'.format(match)
@@ -79,12 +79,21 @@ class gameStats:
                 players.append(data['players'])
                 ranks = [player['rank_tier'] for player in data['players']]
                 self.matchesAnalysed.append(match)
-
+                
+                player_ids = [player.get('account_id') for player in data['players'] if player.get('account_id') is not None]
+                
+                if match not in self.playerMatchIDs:
+                    self.playerMatchIDs[match] = player_ids
+                else:
+                    self.playerMatchIDs[match].extend(player_ids)
+            
+                        
         # Loop through the player ids and add them to the list
         # Conditions: not null, is not the same as player (user), and is not already in the list
         for player in players:
             for p in player:
-                if p['account_id'] and p['account_id'] != self.id and p['account_id'] not in userInfo.keys():
+                # if p['account_id'] and p['account_id'] != self.id and p['account_id'] not in userInfo.keys():
+                if p.get('account_id') and p.get('account_id') != self.id and p.get('account_id') not in userInfo.keys():
                     userInfo[p['account_id']] = {}
                     userInfo[p['account_id']]['userName'] = p['personaname'].encode().decode('unicode_escape')
                     userInfo[p['account_id']]['rank'] = p['rank_tier']
@@ -124,7 +133,11 @@ class gameStats:
             self.APICalls += 1
             r = requests.get(url)
             data = r.json()
-            userInfo[pID].update({'win': int(data['win']), 'lose': int(data['lose'])})
+            if pID not in userInfo:
+                userInfo[pID] = {'win': int(data['win']), 'lose': int(data['lose'])}
+            else:
+                userInfo[pID].update({'win': int(data['win']), 'lose': int(data['lose'])})
+                
 
         corruptedPlayerKeys = []
         for player in userInfo:
@@ -138,8 +151,7 @@ class gameStats:
 
         for player in corruptedPlayerKeys:
             del (userInfo[player])
-
-            # adds the win percent to the WL dictionary
+            
         for player in userInfo:
             userInfo[player]['winPercent'] = round(
                 (userInfo[player]['win']/userInfo[player]['total'])*100, 2)
@@ -153,8 +165,6 @@ class gameStats:
         totalGames = []
 
         for player, value in self.playerData.items():
-            # wins.append(value.get('winPercent', 0))
-            # totalGames.append(value.get('total', 0))
             wins.append(value['winPercent'])
             totalGames.append(value['total'])
 
@@ -220,17 +230,17 @@ class gameStats:
             "matchesAnalyzed": self.matchesAnalysed,
             "analyzedPlayers": self.getAnalyses(),
             "APICalls": self.APICalls,
-            "Times": self.times
+            "Times": self.times,
+            "MatchesRuined" : self.gamesRuined
         }
 
         # r = json.dumps(retData, ensure_ascii=False)
         return retData
 
     def getPrevDataIfExists(self, id):
-        path = f"./backend/python/PlayerEntries/{id}.json"
+        path = f"../python/PlayerEntries/{self.id}.json"
         if os.path.exists(path):
             with open(path, 'r', encoding='utf8') as file:
-                # Load the JSON data from the file
                 try:
                     data = json.loads(file.read())
                     self.matchesAnalysed = data["matchesAnalyzed"]
@@ -238,7 +248,7 @@ class gameStats:
                 except json.decoder.JSONDecodeError:
                     print('Error decoding JSON from file')
         else:
-            print('file DNE for some reason')
+            print('file not found')
 
 
     def getAnalyses(self):
@@ -291,9 +301,9 @@ class gameStats:
         
       
     def saveData(self):
-      path = f"./backend/python/PlayerEntries/{self.id}.json"
-      with open(path, 'w', encoding='utf8') as file:
-        json.dump(self.playerData, file, ensure_ascii=False)
+        path = f"../python/PlayerEntries/{self.id}.json"
+        with open(path, 'w', encoding='utf8') as file:
+            json.dump(self.playerData, file, ensure_ascii=False)
 
     # EXPERIMENTAL
     def getFullMatchHistory(self, id):
@@ -306,6 +316,15 @@ class gameStats:
     def setNMatches(self, n):
         data = self.getFullMatchHistory()
         return data[:n]
+    
+    def countMatchesWithOutliers(self):
+        count = 0
+        for match, players in self.playerMatchIDs.items():
+            for player in players:
+                if player in self.outlierData['highWinLowGames'].keys() or player in self.outlierData['lowWinLowGames'].keys():
+                    count += 1
+        return count
+                            
 
 
 

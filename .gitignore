@@ -30,4 +30,10 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+
 backend/python/Tester.ipynb
+backend/python/jobTester.ipynb
+backend/python/DataPreProcessor.ipynb
+backend/python/__pycache__/dataAggregator.cpython-310.pyc
+backend/python/__pycache__/dataAggregator.cpython-311.pyc
