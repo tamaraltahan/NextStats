@@ -95,8 +95,12 @@ class gameStats:
                 # if p['account_id'] and p['account_id'] != self.id and p['account_id'] not in userInfo.keys():
                 if p.get('account_id') and p.get('account_id') != self.id and p.get('account_id') not in userInfo.keys():
                     userInfo[p['account_id']] = {}
-                    userInfo[p['account_id']]['userName'] = p['personaname'].encode().decode('unicode_escape')
+                    if p.get('personaname') is not None:
+                        userInfo[p['account_id']]['userName'] = p['personaname'].encode().decode('unicode_escape')
+                    else:
+                        userInfo[p['account_id']]['userName'] = None
                     userInfo[p['account_id']]['rank'] = p['rank_tier']
+
                     
         end = time.perf_counter()
         self.calcTime(start, end)
