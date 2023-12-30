@@ -29,7 +29,9 @@ class gameStats:
         self.getPrevDataIfExists(id)
         data = self.openRecentMatches()
         self.userInfo = self.getPlayersFromMatches(data)
+        
         if not hasattr(self, 'playerData'):
+            print('prev data not found')
             self.playerData = self.getPlayerWinRate(self.userInfo)
         else:
             self.playerData.update(self.getPlayerWinRate(self.userInfo))
@@ -37,7 +39,8 @@ class gameStats:
         self.stats = self.getPlayerStats()
         self.outlierData = self.findOutliers(self.stats)
         self.removeDuplicates(self.playerData)
-        self.gamesRuined = self.countMatchesWithOutliers()
+        self.gamesRuined += self.countMatchesWithOutliers()
+
 
     def calcTime(self, start, end):
         total = end - start
@@ -48,7 +51,8 @@ class gameStats:
         self.APICalls += 1
         r = requests.get(url)
         recents = r.json()
-        return recents
+        rankedMatches = [match for match in recents if match['lobby_type'] == 7]
+        return rankedMatches
 
     def getPlayersFromMatches(self, data):
         start = time.perf_counter()
@@ -117,7 +121,7 @@ class gameStats:
 
 
         Returns:
-            userInfo (dict): Dictionary recieved appending with sub dictionary containing player's wins, losses, total games, winrate percent
+            userInfo (dict): The dictionary recieved, appended with the player's wins, losses, total games, winrate percent
         """
         start = time.perf_counter()
         counter = 0
@@ -140,7 +144,12 @@ class gameStats:
             if pID not in userInfo:
                 userInfo[pID] = {'win': int(data['win']), 'lose': int(data['lose'])}
             else:
-                userInfo[pID].update({'win': int(data['win']), 'lose': int(data['lose'])})
+                try:
+                    userInfo[pID].update({'win': int(data['win']), 'lose': int(data['lose'])})
+                except:
+                    print(userInfo[pID])
+                    print(data0)
+                
                 
 
         corruptedPlayerKeys = []
@@ -163,6 +172,7 @@ class gameStats:
         end = time.perf_counter()
         self.calcTime(start, end)
         return userInfo
+    
 
     def getPlayerStats(self):
         wins = []
@@ -242,6 +252,7 @@ class gameStats:
         return retData
 
     def getPrevDataIfExists(self, id):
+        # path = f"/python/PlayerEntries/{self.id}.json"
         path = f"../python/PlayerEntries/{self.id}.json"
         if os.path.exists(path):
             with open(path, 'r', encoding='utf8') as file:
@@ -249,20 +260,23 @@ class gameStats:
                     data = json.loads(file.read())
                     self.matchesAnalysed = data["matchesAnalyzed"]
                     self.playerData = data['playerData']
+                    self.gamesRuined = data['gamesRuined']
                 except json.decoder.JSONDecodeError:
                     print('Error decoding JSON from file')
         else:
             print('file not found')
+        
+        # For testing, remove later
+        # return data['playerData']
+            
 
 
     def getAnalyses(self):
         matches = len(self.matchesAnalysed)
 
-        # counts
         countPlayers = len(self.playerData)
         countOutliers = self.countUniqueIds()
         countPossible = matches * 9
-        # percentages
         analyzedPercent = round((countPlayers/countPossible) * 100, 2)
         anonPercent = round((100 - analyzedPercent), 2)
         outlierPercent = round(100*(countOutliers/countPlayers), 2)
@@ -303,12 +317,15 @@ class gameStats:
     def decodeUsernames(self, encodedString):
         return codecs.decode(encodedString, 'unicode_escape')
         
-      
-    def saveData(self):
-        path = f"../python/PlayerEntries/{self.id}.json"
-        with open(path, 'w', encoding='utf8') as file:
-            json.dump(self.playerData, file, ensure_ascii=False)
 
+    def countMatchesWithOutliers(self):
+        count = 0
+        for match, players in self.playerMatchIDs.items():
+            for player in players:
+                if player in self.outlierData['highWinLowGames'].keys() or player in self.outlierData['lowWinLowGames'].keys():
+                    count += 1
+        return count
+                            
     # EXPERIMENTAL
     def getFullMatchHistory(self, id):
         url = f"https://api.opendota.com/api/players/{id}/matches"
@@ -321,14 +338,6 @@ class gameStats:
         data = self.getFullMatchHistory()
         return data[:n]
     
-    def countMatchesWithOutliers(self):
-        count = 0
-        for match, players in self.playerMatchIDs.items():
-            for player in players:
-                if player in self.outlierData['highWinLowGames'].keys() or player in self.outlierData['lowWinLowGames'].keys():
-                    count += 1
-        return count
-                            
 
 
 
