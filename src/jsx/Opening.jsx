@@ -1,39 +1,49 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import MatchModeSelector from './MatchModeSelector';
 
-const Opening = (props) => {
+const Opening = () => {
   const [ID, setID] = useState('');
+  const [matchMode, setMatchMode] = useState('ranked');
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/verify?id=${ID}`);
+    if (!ID) return;
+    router.push(`/verify?id=${ID}&mode=${matchMode}`);
   };
 
   return (
-    <div>
-      <h1 id="topBanner">
+    <section className="hero">
+      <h1 className="hero__title">Analyze your recent Dota 2 matches</h1>
+      <p className="hero__subtitle">
         Enter your{' '}
         <a href="https://www.opendota.com/" target="_blank" rel="noopener noreferrer">
           OpenDota
         </a>{' '}
-        user ID
-      </h1>
+        player ID to find statistical outliers in your lobby.
+      </p>
+
+      <MatchModeSelector value={matchMode} onChange={setMatchMode} />
 
       <div className="inputContainer">
         <input
           onWheel={(e) => e.target.blur()}
           id="pInput"
           type="number"
+          placeholder="OpenDota player ID"
+          value={ID}
           onChange={(event) => setID(event.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleClick()}
         />
 
-        <button className="button-85" onClick={handleClick} placeholder="OpenDota ID" type="submit">
-          Submit
-        </button>
-        <br />
+        <div className="submit-wrap">
+          <button className="button-85" onClick={handleClick} type="button">
+            Submit
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

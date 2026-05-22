@@ -1,18 +1,16 @@
-import '@/styles/globals.css'
-import { createTheme, NextUIProvider } from '@nextui-org/react';
-// eslint-disable-next-line no-unused-vars
-import styles from '../styles/styles.css'
-
+import '@/styles/globals.css';
+import '../styles/styles.css';
 
 export default function App({ Component, pageProps }) {
-  const darkTheme = createTheme({
-    type: 'dark',
-    theme: {},
-  });
-  
   return (
-  <NextUIProvider theme={darkTheme}>
-    <Component {...pageProps} />
-  </NextUIProvider>
+    <div className="page-shell">
+      <header className="site-header">
+        <div className="site-header__brand">GameStats</div>
+        <p className="site-header__tagline">Dota 2 match outlier analysis</p>
+      </header>
+      <main className="page-main">
+        <Component {...pageProps} />
+      </main>
+    </div>
   );
 }

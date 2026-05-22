@@ -1,36 +1,31 @@
-# from dataAggregator import gameStats
-# import sys
-# import json
-# import os
-
-# id = sys.argv[1]
-# Data = gameStats(id)
-
-# path = f"./backend/python/PlayerEntries/{id}.json"
-
-# if os.path.exists(path):
-#     with open(path, 'r') as file:
-#         existing_data = json.load(file)
-# else:
-#     existing_data = {}
-
-# new_data = json.loads(Data.getData())
-# existing_data.update(new_data)
-
+import sys
 
 from dataAggregator import gameStats
-import sys
-import json
+from db import init_db, normalize_match_mode, save_run
 
-id = sys.argv[1]
-Data = gameStats(id)
 
-path = f"./backend/python/PlayerEntries/{id}.json"
+def main():
+    if len(sys.argv) < 2:
+        print('Usage: job.py <player_id> [ranked|all]', file=sys.stderr)
+        sys.exit(1)
 
-with open(path, 'w+', encoding='utf8') as f:
-    json.dump(Data.getData(), f, ensure_ascii=False)
+    player_id = sys.argv[1]
+    if not player_id.isdigit():
+        print('Invalid player ID', file=sys.stderr)
+        sys.exit(1)
 
-# f = open(path, "w+", encoding='utf8')
-# f.write(Data.getData())
+    try:
+        match_mode = normalize_match_mode(sys.argv[2] if len(sys.argv) > 2 else 'ranked')
+    except ValueError as e:
+        print(e, file=sys.stderr)
+        sys.exit(1)
 
-# f.close()
+    init_db()
+    engine = gameStats(player_id, match_mode=match_mode)
+    payload = engine.getData()
+    save_run(player_id, match_mode, payload, engine.match_meta_list)
+    print(f'Saved {match_mode} analysis for {player_id} ({len(payload["matchesAnalyzed"])} matches)')
+
+
+if __name__ == '__main__':
+    main()

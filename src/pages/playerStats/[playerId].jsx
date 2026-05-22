@@ -1,214 +1,163 @@
 'use client';
-import PlayerList from '../../jsx/PlayerList';
-import OutlierList from '@/jsx/OutlierList';
-import { useEffect, useState } from 'react';
+import MasterPlayerTable from '../../jsx/MasterPlayerTable';
+import TopSuspects from '@/jsx/TopSuspects';
+import StatsSummary from '@/jsx/StatsSummary';
+import TierLegend from '@/jsx/TierLegend';
+import ClassificationOverview from '@/jsx/ClassificationOverview';
+import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { Spacer, Card, Text, Container, Grid } from '@nextui-org/react';
+import { API_URL } from '@/lib/api';
+import Loader from '../../jsx/Loader';
 import MyPiePlot from '../../jsx/PiePlot';
 import MyScatterPlot from '../../jsx/ScatterPlot';
+import { buildScatterPoints } from '@/lib/playerData';
+import { normalizeAnalysis } from '@/lib/analysis';
+import { matchModeLabel, normalizeMatchMode } from '@/lib/matchMode';
+import GlobalPoolCard from '@/jsx/GlobalPoolCard';
+import MatchModeSelector from '@/jsx/MatchModeSelector';
 
 const StatsScreen = () => {
-  const [playerId, setPlayerID] = useState('');
   const [data, setData] = useState(null);
   const [userName, setUserName] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const router = useRouter();
+  const matchMode = normalizeMatchMode(router.query.mode);
+  const playerId =
+    router.isReady && router.query.playerId != null ? String(router.query.playerId) : '';
 
   useEffect(() => {
-    setPlayerID(router.query.playerId);
-  }, [router.query]);
-
-  useEffect(() => {
-    if (playerId) {
-      const fetchData = async () => {
-        try {
-          const res = await axios.get(`http://localhost:3001/playerData?id=${playerId}`);
-          setData(res.data);
-        } catch (e) {
-          // console.log(e);
-        }
-      };
-      fetchData();
-    }
-  }, [playerId]);
-
-  useEffect(() => {
-    const playerLink = `https://api.opendota.com/api/players/${playerId}`;
+    if (!router.isReady || !playerId) return;
 
     const fetchData = async () => {
+      setLoading(true);
+      setError('');
       try {
-        const res = await axios.get(playerLink);
-        setUserName(res.data.profile.personaname);
-      } catch (error) {
-        console.log(error);
+        const res = await axios.get(`${API_URL}/playerData`, {
+          params: { id: playerId, mode: matchMode },
+        });
+        setData(res.data);
+      } catch (e) {
+        setData(null);
+        setError(
+          e.response?.data?.error ||
+            'Could not load analysis. Run verification first or wait for the script to finish.'
+        );
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
-  }, [playerId]);
+  }, [router.isReady, playerId, matchMode]);
 
-  if (!playerId || !data) return null;
+  useEffect(() => {
+    if (!router.isReady || !playerId) return;
+    axios
+      .get(`https://api.opendota.com/api/players/${playerId}`)
+      .then((res) => setUserName(res.data?.profile?.personaname ?? 'Player'))
+      .catch(() => setUserName('Player'));
+  }, [router.isReady, playerId]);
+
+  const analysis = useMemo(() => (data ? normalizeAnalysis(data) : null), [data]);
+
+  const scatterPoints = useMemo(
+    () => (analysis ? buildScatterPoints(analysis.players) : []),
+    [analysis]
+  );
+
+  if (!router.isReady || !playerId) return <Loader message="Loading…" />;
+  if (loading) return <Loader message="Loading player analysis…" />;
+  if (error) return <p className="error-banner">{error}</p>;
+  if (!data || !analysis) return null;
+
+  const tierCounts = analysis.tierCounts || {};
+  const flaggedCount = analysis.flaggedPlayerIds?.length ?? 0;
+  const typicalCount = tierCounts.typical ?? 0;
+
   return (
-    <div>
-      <div className="statsBanner">
-        <Text h2 className="centered">
-          Showing outliers for {userName}
-        </Text>
-        <Spacer />
-        <Container>
-          <Card
-            className="centered"
-            css={{ mw: '900px', paddingLeft: '50px', paddingRight: '50px' }}
-          >
-            <Text>
-              The mean total games played is:&nbsp;&nbsp; {data.Statistics.meanTotal} games
-              <br />
-              The mean win percent of players is:&nbsp;&nbsp; {data.Statistics.meanWins}% winrate
-            </Text>
-            <br />
-            <Text>
-              Filtered players will have a deviation of {data.outliers.totalGamesThreshold} games,
-              and {data.outliers.winPercentThreshold}% winrate from the mean
-            </Text>
-            <Spacer />
-            <Text>
-              Filtered players will have a winrate less than{' '}
-              <span style={{ fontWeight: 'bold' }}>
-                {(data.Statistics.meanWins - data.outliers.winPercentThreshold).toFixed(2)}%
-              </span>{' '}
-              or greater than{' '}
-              <span style={{ fontWeight: 'bold' }}>
-                {(data.Statistics.meanWins + data.outliers.winPercentThreshold).toFixed(2)}%
-              </span>
-              <br />
-              and a total game count of less than{' '}
-              <span style={{ fontWeight: 'bold' }}>
-                {Math.round(data.Statistics.meanTotal - data.outliers.totalGamesThreshold) + 1}{' '}
-              </span>{' '}
-              or greater than{' '}
-              <span style={{ fontWeight: 'bold' }}>
-                {Math.round(data.Statistics.meanTotal + data.outliers.totalGamesThreshold) + 1}
-              </span>
-            </Text>
-
-            <Spacer />
-            <Text css={{ textAlign: 'center' }}>
-              <Text color="warning" weight="extrabold">
-                Disclaimer:
-              </Text>
-              Since the standard deviation of total games is very high, outliers for total games
-              will be outside of <span style={{ fontWeight: 'bold' }}>1</span> stdev, while the win
-              rate is at 1.5 stdevs
-            </Text>
-          </Card>
-        </Container>
-      </div>
-
-      <div>
-        <p style={{ marginTop: '25px', fontSize: 'large', textAlign: 'center' }}>
-          List of all available players & their stats:
+    <div className="stats-page">
+      <div className="stats-hero">
+        <h1>
+          Match analysis for <span className="stats-hero__name">{userName}</span>
+        </h1>
+        <p className="hero__subtitle" style={{ marginTop: '0.5rem' }}>
+          <span className="mode-pill">{matchModeLabel(matchMode)}</span>
+          {' · '}
+          {data.analyzedPlayers?.matches ?? '—'} matches · {analysis.players.length} players ·{' '}
+          {flaggedCount} flagged
         </p>
-        <Container css={{ maxWidth: '90%' }}>
-          <PlayerList playerData={data.playerData} />
-        </Container>
-      </div>
-      <Spacer />
-
-      <div className="statsBanner">
-        <Container>
-          <Card className="centered" css={{ mw: '800px', padding: '15px' }}>
-            <Text>Lists of players filtered as outliers</Text>
-          </Card>
-        </Container>
-      </div>
-      <Spacer />
-
-      <div style={{ justifyContent: 'center', display: 'flex' }}>
-        <Card css={{ mw: '80%' }}>
-          <Card.Body>
-            {/* map outlier lists */}
-            <div className="grid-container">
-              <OutlierList
-                outlierData={data.outliers.outlierWinsPositive}
-                name="Positive Winrate"
-                className="outliers"
-              />
-              <OutlierList
-                outlierData={data.outliers.outlierTotalsPositive}
-                name="Positive Total Games"
-              />
-              <OutlierList
-                outlierData={data.outliers.outliersWinsNegative}
-                name="Negative Winrate"
-                className="outliers"
-              />
-              <OutlierList
-                outlierData={data.outliers.outliersTotalNegative}
-                name="Negative Total Games"
-              />
-              <OutlierList
-                outlierData={data.outliers.highWinLowGames}
-                name="High Winrate, Low Total Games"
-              />
-              <OutlierList
-                outlierData={data.outliers.lowWinLowGames}
-                name="Low Winrate, Low Total Games"
-              />
-            </div>
-          </Card.Body>
-        </Card>
+        <div className="stats-mode-switch">
+          <MatchModeSelector
+            value={matchMode}
+            onChange={(mode) =>
+              router.push({
+                pathname: '/playerStats/[playerId]',
+                query: { playerId, mode },
+              })
+            }
+          />
+          <p className="stat-label">
+            Switching modes shows a separate saved analysis. Run verification again if this mode
+            has not been analyzed yet.
+          </p>
+        </div>
       </div>
 
-      <Grid.Container gap={2} justify="center">
-        <Grid>
+      <GlobalPoolCard pool={data.globalPool} />
+
+      <StatsSummary
+        statistics={data.Statistics}
+        analysis={{ ...analysis, matches: data.analyzedPlayers?.matches }}
+        matchMode={matchMode}
+      />
+
+      <TierLegend tierCounts={tierCounts} />
+
+      <h2 className="section-title">Top suspects</h2>
+      <div className="top-suspects-panel card-surface">
+        <TopSuspects suspects={analysis.topSuspects} />
+      </div>
+
+      <h2 className="section-title">All parsed players</h2>
+      <div className="player-table-panel card-surface">
+        <MasterPlayerTable players={analysis.players} />
+      </div>
+
+      <h2 className="section-title">Classification breakdown</h2>
+      <div className="card-surface" style={{ padding: '1.25rem' }}>
+        <ClassificationOverview
+          classificationCounts={analysis.classificationCounts}
+          methodology={analysis.methodology}
+        />
+      </div>
+
+      <div className="charts-row">
+        <div className="chart-wrap">
           <MyPiePlot
-            title="Anonymous Profiles"
+            title="Public vs anonymous"
             axes1={data.analyzedPlayers.countPlayers}
-            axes2={data.analyzedPlayers.countPossible}
+            axes2={data.analyzedPlayers.countPossible - data.analyzedPlayers.countPlayers}
             label1="Public"
             label2="Anonymous"
           />
-        </Grid>
+        </div>
+        <div className="chart-wrap">
+          <MyPiePlot
+            title="Flagged vs typical"
+            axes1={flaggedCount}
+            axes2={typicalCount}
+            label1="Flagged"
+            label2="Typical"
+          />
+        </div>
+      </div>
 
-        <MyPiePlot
-          title="Outliers to Normal Players"
-          axes1={data.analyzedPlayers.countOutliers}
-          axes2={data.analyzedPlayers.countPlayers}
-          label1="Outliers"
-          label2="Normal"
-        />
-      </Grid.Container>
-      <div className="centered">
-        <MyScatterPlot title="Total Games to Win Percent" x={data.totals} y={data.winPercents} />
+      <div className="chart-wrap centered" style={{ margin: '0 auto', maxWidth: '100%' }}>
+        <MyScatterPlot title="Win rate vs total games (by tier)" points={scatterPoints} />
       </div>
     </div>
   );
 };
 
 export default StatsScreen;
-
-/*
-
-          const piData1 = {
-            "title" : "Anonymous Profiles",
-            "axes": {
-              "a": res.data.analyzedPlayers.countPlayers,
-              "b": res.datadata.analyzedPlayers.countPossible,
-            },
-            "labels":{
-              'a': 'Public',
-              'b': 'Anonymous'
-            } 
-          }
-        
-          const piData2 = {
-            "title" : "Outliers to Normal Profiles",
-            "axes": {
-              "a": res.data.analyzedPlayers.countPlayers,
-              "b": res.data.analyzedPlayers.countOutliers,
-            },
-            "labels":{
-              'a': 'Normal',
-              'b': 'Outlier'
-            } 
-          }
-*/

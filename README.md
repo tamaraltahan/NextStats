@@ -1,41 +1,187 @@
-# What this is
+# GameStats - Quick Start Guide
 
-## Elevator pitch
+A Dota 2 smurf detection tool that analyzes a player's recent matches to identify potential smurfs or purchased accounts using statistical analysis.
 
-Did a smurf or account buyer just ruin your game? of course they did! Now you're wondering how many smurfs you're constantly playing against, and do I have a solution for you.
-With my handy dandy website, we can parse through the data of each player (with a public profile) & make some clever guesses on which players have the most impact in your games! With this python script, we look at the best **and** worst 15% of players and put them into different lists so you can judge for yourself who is actively ruining dota games!
+**All you need:** Node.js, Python, and a Dota 2 player ID. The app uses the public OpenDota API—no API key registration needed.
 
+## Quick Start
 
-### but no really
-I'm learning to use React.js (using Next.js) to create a webpage and integrate my dota smurf detection script into a somewhat interactive webpage.
+### 1. Install Dependencies
 
+**Node.js:**
+```bash
+npm install
+```
 
-The goal is to make an educated guess onto the amount of smurfs one plays against in their last 20 games with some basic criteria.
-Using some very basic statistics, the python script which I initially developed in frustration over my matches has been refined to lump players outside of 1.5 standard deviations of all parsable players into different lists.
-With these revisions I'm not explicitly calling any profiles out, but just lumping them if they're in the best or worst 15% of players from the basis of winrate (as a percent) and total games played.
+**Python:**
+```bash
+pip install -r backend/python/requirements.txt
+```
 
-You can see my previous implementation [here](https://github.com/tamaraltahan/GameStats/blob/main/GameStats.py)
+### 2. Configure Backend URL
 
-### limitations
+Copy the example env file and adjust if needed:
 
-The python script uses OpenDota's free API which is rate limited to 60 API calls a minute, 50k/mo so the time to run the script takes a few minutes (between 2.5-5).
+```bash
+cp .env.example .env.local
+```
 
-This is also a learning project for me so there will always be room for improvement and polish to add.
-I've learned front end concept, back end concepts, but merging the two is a new challenge in that now I need both pieces to work together.
-Also this is not an area I've spent time working on profesionally, but hope to work with in the future.
+Default in `.env.local`:
 
+```bash
+NEXT_PUBLIC_BACKEND_URL=http://localhost:3001
+```
 
-Now for the boilerplate Next readme,
+### 3. Run the App
 
+```bash
+npm run both
+```
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Open **http://localhost:3000** in your browser.
 
-## Getting Started
+### 4. Find Your Dota 2 Player ID
 
-`Yarn both` will start the frontent react server & the node/express backend.
-`yarn dev` will run the frontend
-`node backend.js` runs the backend
-**disclaimer**
-I'll fix this later, but if you want to start the node server by itself then make sure your terminal is in lowercase ./gamestats/
+Visit https://www.opendota.com/, search for your account, and copy the ID from the URL:
 
+```
+https://www.opendota.com/players/[YOUR_ID_HERE]
+```
 
+### 5. Analyze
+1. Choose **Ranked only** or **All queues** (Turbo, etc.)
+2. Paste your player ID and verify
+3. Wait 2–5 minutes (OpenDota rate limits)
+4. View results; switch modes on the stats page (each mode is saved separately)
+
+### Migrate old JSON exports (optional)
+
+If you have legacy `backend/python/PlayerEntries/*.json` files:
+
+```bash
+npm install
+npm run migrate:json
+```
+
+---
+
+## Advanced Setup
+
+### Python Virtual Environment (Optional)
+
+```bash
+python -m venv venv
+venv\Scripts\activate   # Windows
+source venv/bin/activate  # macOS/Linux
+pip install -r backend/python/requirements.txt
+```
+
+### Running Frontend & Backend Separately
+
+**Terminal 1 — Frontend:**
+```bash
+npm run dev
+```
+
+**Terminal 2 — Backend:**
+```bash
+npm run server
+```
+
+### Backend Environment Variables (Optional)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `3001` | Express API port |
+| `PYTHON_CMD` | `python` | Python executable (`python3` on some Linux installs) |
+
+---
+
+## Troubleshooting
+
+### "npm: command not found"
+
+Install Node.js v18+ from https://nodejs.org/
+
+### "Cannot find module 'requests'"
+
+```bash
+pip install -r backend/python/requirements.txt
+```
+
+### Port 3000 or 3001 already in use
+
+```bash
+# Windows
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+
+# macOS/Linux
+lsof -i :3000
+kill -9 <PID>
+```
+
+### "Error running Python script" in the browser
+
+- Confirm Python: `python --version`
+- Run `npm run both` from this directory (where `package.json` lives)
+- Ensure `backend/python/PlayerEntries/` exists (created automatically on first run)
+
+### Analysis runs but stats page is empty
+
+- Analysis takes 2–5 minutes due to API rate limits
+- Check the browser console (F12) and that the backend is reachable at `NEXT_PUBLIC_BACKEND_URL`
+- Try a different player ID with a public OpenDota profile
+
+---
+
+## Architecture
+
+| Layer | Stack | Role |
+|-------|-------|------|
+| Frontend | Next.js, React, Plotly | UI and charts |
+| API | Express (Node) + better-sqlite3 | Triggers analysis, reads SQLite |
+| Analysis | Python | Fetches OpenDota data, scoring & tiers |
+| Storage | `backend/python/gamestats.db` | Per-user runs + global player pool |
+
+## Match modes
+
+| Mode | Matches included |
+|------|------------------|
+| **Ranked only** | OpenDota `lobby_type` 7 (ranked) |
+| **All queues** | Every match in your recent OpenDota history |
+
+Each mode stores a **separate** analysis for your account. Rank tiers in the global pool are tracked **per mode**, so ranked and Turbo-heavy samples do not overwrite each other's rank context.
+
+## Global knowledge base
+
+Every completed analysis **additively** contributes:
+
+- Unique players sighted (with refreshed lifetime win/loss from OpenDota)
+- Match IDs catalogued across contributors
+- Rank snapshots keyed by `ranked` vs `all`
+
+## Detection model
+
+After you run verification, Python scores every parsed player in your selected match set:
+
+- **IQR bands** on win rate and total games (more robust than mean ± σ)
+- **Smurf-shaped** — high win rate with fewer games than the pool median
+- **Rank mismatch** — win rate well above typical for their OpenDota medal
+- **Suspicion score (0–100)** with tiers: Typical · Watch (25+) · Likely outlier (50+) · Strong outlier (75+)
+
+Re-run verification for each mode you want on file. Legacy JSON in `PlayerEntries/` still loads for ranked-only via `npm run migrate:json` or automatic fallback.
+
+---
+
+## Resources
+
+- [OpenDota API](https://docs.opendota.com/)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Express.js Documentation](https://expressjs.com/)
+
+---
+
+## License
+
+See [LICENSE.md](./LICENSE.md)

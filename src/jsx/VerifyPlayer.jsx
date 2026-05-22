@@ -4,30 +4,39 @@ import axios from 'axios';
 import { useState } from 'react';
 import VerifyMenu from './VerifyMenu';
 import { useRouter } from 'next/router';
+import { API_URL } from '@/lib/api';
+import { matchModeLabel, normalizeMatchMode } from '@/lib/matchMode';
+import MatchModeSelector from './MatchModeSelector';
 
-function VerifyPlayer(props) {
+function VerifyPlayer({ playerName, playerID, matchMode: initialMode = 'ranked' }) {
   const [verified, setVerified] = useState(false);
+  const [error, setError] = useState('');
+  const [matchMode, setMatchMode] = useState(normalizeMatchMode(initialMode));
   const router = useRouter();
 
   const handleConfirm = () => {
+    if (!playerID || !/^\d{1,12}$/.test(String(playerID))) {
+      setError('Invalid player ID.');
+      return;
+    }
+
     setVerified(true);
+    setError('');
     axios
-      .post('http://localhost:3001/verified', { id: props.playerID })
-      .then((res) => {
+      .post(`${API_URL}/verified`, { id: String(playerID), matchMode })
+      .then(() => {
         router.push({
-          pathname: `/playerStats/[playerId]`,
-          query: { playerId: props.playerID },
+          pathname: '/playerStats/[playerId]',
+          query: { playerId: String(playerID), mode: matchMode },
         });
       })
       .catch((err) => {
-        if (err.response) {
-          // console.log(err.response);
-        } else if (err.request) {
-          // console.log(err.request);
-        } else {
-          // console.log('Error', err.message);
-        }
-        // console.log(err.config);
+        setVerified(false);
+        const message =
+          err.response?.data?.error ||
+          err.message ||
+          'Analysis failed. Is the backend running?';
+        setError(message);
       });
   };
 
@@ -36,9 +45,22 @@ function VerifyPlayer(props) {
   };
 
   return !verified ? (
-    <VerifyMenu playerName={props.playerName} onConfirm={handleConfirm} onReject={handleReject} />
+    <>
+      <VerifyMenu
+        playerName={playerName}
+        matchModeLabel={matchModeLabel(matchMode)}
+        onConfirm={handleConfirm}
+        onReject={handleReject}
+      />
+      <div style={{ maxWidth: '32rem', margin: '1rem auto 0' }}>
+        <MatchModeSelector value={matchMode} onChange={setMatchMode} />
+      </div>
+      {error ? <p className="error-banner">{error}</p> : null}
+    </>
   ) : (
-    <Loader message="The script is running & will take 3-5 minutes to finish. Please be patient ⏱️" />
+    <Loader
+      message={`Running ${matchModeLabel(matchMode).toLowerCase()} analysis — typically 3–5 minutes. Please wait…`}
+    />
   );
 }
 

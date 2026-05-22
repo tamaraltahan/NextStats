@@ -1,396 +1,187 @@
+import codecs
+import statistics
+import time
 
 import requests
-import json
-import time
-import statistics
-import os
-import codecs
+
+from db import filter_matches_by_mode, load_previous_run, normalize_match_mode
+from playerAnalysis import analyze_players, count_impacted_matches
+
 
 class gameStats:
 
     APICalls = 0
-    isRunning = False
     times = []
     matchesAnalysed = []
-    
     playerMatchIDs = dict()
     gamesRuined = 0
-    
-    # initialized in constructor
-    """
-    id: entered player ID
-    PIDs: aggregated list of player ID's
-    stats: dict
-    outlierData: dict
-    """
-     
-    def __init__(self, id):
-        self.id = id
-        self.getPrevDataIfExists(id)
+    match_meta_list = []
+
+    def __init__(self, account_id, match_mode='ranked'):
+        self.id = str(account_id)
+        self.match_mode = normalize_match_mode(match_mode)
+        self.recent_match_lookup = {}
+
+        prev_matches, prev_players, prev_ruined = load_previous_run(self.id, self.match_mode)
+        self.matchesAnalysed = list(prev_matches)
+        self.playerData = dict(prev_players) if prev_players else {}
+        self.gamesRuined = prev_ruined or 0
+
         data = self.openRecentMatches()
         self.userInfo = self.getPlayersFromMatches(data)
-        
-        if not hasattr(self, 'playerData'):
-            print('prev data not found')
-            self.playerData = self.getPlayerWinRate(self.userInfo)
-        else:
+
+        if self.playerData:
             self.playerData.update(self.getPlayerWinRate(self.userInfo))
+        else:
+            self.playerData = self.getPlayerWinRate(self.userInfo)
 
         self.stats = self.getPlayerStats()
-        self.outlierData = self.findOutliers(self.stats)
-        self.removeDuplicates(self.playerData)
-        self.gamesRuined += self.countMatchesWithOutliers()
-
+        self.playerData = self.removeDuplicates(self.playerData)
+        self.analysis = analyze_players(self.playerData)
+        self.outlierData = self.analysis['legacyOutliers']
+        suspect_ids = {
+            p['id'] for p in self.analysis['players']
+            if p['tier'] in ('watch', 'likely_outlier', 'strong_outlier')
+        }
+        self.gamesRuined += count_impacted_matches(self.playerMatchIDs, suspect_ids)
 
     def calcTime(self, start, end):
-        total = end - start
-        self.times.append(total)
+        self.times.append(end - start)
 
     def openRecentMatches(self):
-        url = 'https://api.opendota.com/api/players/{}/recentMatches'.format(self.id)
+        url = f'https://api.opendota.com/api/players/{self.id}/recentMatches'
         self.APICalls += 1
-        r = requests.get(url)
-        recents = r.json()
-        rankedMatches = [match for match in recents if match['lobby_type'] == 7]
-        return rankedMatches
+        recents = requests.get(url).json()
+        self.recent_match_lookup = {m['match_id']: m for m in recents}
+        return filter_matches_by_mode(recents, self.match_mode)
 
     def getPlayersFromMatches(self, data):
         start = time.perf_counter()
-        """
-        Returns all players ID's in the user's last 20 matches
-
-
-        Args:
-            id (int): player's steam32 ID
-            data (JSON): JSON object of thee recentMatches API call
-
-        Returns:
-            userInfo: A dictionary of non-duplicate player ID's in 20 game match history with usernames and ranks as values
-        """
-        match_ids = []
+        match_ids = [match['match_id'] for match in data]
         players = []
-        userInfo = dict()
-        
-        for match in data:
-            match_ids.append(match['match_id'])
+        userInfo = {}
 
-        for match in match_ids:
-            if match not in self.matchesAnalysed:
-                url = 'https://api.opendota.com/api/matches/{}'.format(match)
-                self.APICalls += 1
-                r = requests.get(url)
-                data = r.json()
-                players.append(data['players'])
-                ranks = [player['rank_tier'] for player in data['players']]
-                self.matchesAnalysed.append(match)
-                
-                player_ids = [player.get('account_id') for player in data['players'] if player.get('account_id') is not None]
-                
-                if match not in self.playerMatchIDs:
-                    self.playerMatchIDs[match] = player_ids
-                else:
-                    self.playerMatchIDs[match].extend(player_ids)
-            
-                        
-        # Loop through the player ids and add them to the list
-        # Conditions: not null, is not the same as player (user), and is not already in the list
+        for match_id in match_ids:
+            if match_id in self.matchesAnalysed:
+                continue
+
+            url = f'https://api.opendota.com/api/matches/{match_id}'
+            self.APICalls += 1
+            match_data = requests.get(url).json()
+            players.append(match_data['players'])
+            self.matchesAnalysed.append(match_id)
+
+            recent = self.recent_match_lookup.get(match_id, {})
+            meta = {
+                'match_id': match_id,
+                'lobby_type': match_data.get('lobby_type', recent.get('lobby_type')),
+                'game_mode': match_data.get('game_mode', recent.get('game_mode')),
+            }
+            self.match_meta_list.append(meta)
+
+            player_ids = [
+                p.get('account_id') for p in match_data['players']
+                if p.get('account_id') is not None
+            ]
+            self.playerMatchIDs[match_id] = player_ids
+
         for player in players:
             for p in player:
-                # if p['account_id'] and p['account_id'] != self.id and p['account_id'] not in userInfo.keys():
-                if p.get('account_id') and p.get('account_id') != self.id and p.get('account_id') not in userInfo.keys():
-                    userInfo[p['account_id']] = {}
-                    if p.get('personaname') is not None:
-                        userInfo[p['account_id']]['userName'] = p['personaname'].encode().decode('unicode_escape')
-                    else:
-                        userInfo[p['account_id']]['userName'] = None
-                    userInfo[p['account_id']]['rank'] = p['rank_tier']
+                aid = p.get('account_id')
+                if not aid or str(aid) == self.id or aid in userInfo:
+                    continue
+                userInfo[aid] = {}
+                if p.get('personaname') is not None:
+                    userInfo[aid]['userName'] = p['personaname'].encode().decode('unicode_escape')
+                else:
+                    userInfo[aid]['userName'] = None
+                userInfo[aid]['rank'] = p.get('rank_tier')
 
-                    
-        end = time.perf_counter()
-        self.calcTime(start, end)
+        self.calcTime(start, time.perf_counter())
         return userInfo
-    
-    
-    
+
     def getPlayerWinRate(self, userInfo):
-        """
-        Gets the winrate of all available players
-
-        Args:
-            userInfo (dict): Dictionary of player IDs, usernames, and ranks
-
-
-        Returns:
-            userInfo (dict): The dictionary recieved, appended with the player's wins, losses, total games, winrate percent
-        """
         start = time.perf_counter()
         counter = 0
-        limit = len(userInfo)//4
-        APILimiter = 20
-        # Loop through the player ids and get the win/loss
-        # this bit is just to keep from hitting the rate limit of API calls
-        # would rather sacrifice some efficiency than deal with invalid requests
-        for pID in userInfo.keys():
+        limit = max(len(userInfo) // 4, 1)
+        api_limiter = 20
+
+        for pID in list(userInfo.keys()):
             counter += 1
-            if counter == limit and len(userInfo) > APILimiter:
+            if counter == limit and len(userInfo) > api_limiter:
                 counter = 0
                 time.sleep(20)
-                
 
-            url = 'https://api.opendota.com/api/players/{}/wl'.format(pID)
+            url = f'https://api.opendota.com/api/players/{pID}/wl'
             self.APICalls += 1
-            r = requests.get(url)
-            data = r.json()
-            if pID not in userInfo:
-                userInfo[pID] = {'win': int(data['win']), 'lose': int(data['lose'])}
-            else:
-                try:
-                    userInfo[pID].update({'win': int(data['win']), 'lose': int(data['lose'])})
-                except:
-                    print(userInfo[pID])
-                    print(data0)
-                
-                
+            wl = requests.get(url).json()
+            try:
+                userInfo[pID].update({'win': int(wl['win']), 'lose': int(wl['lose'])})
+            except (KeyError, TypeError, ValueError) as err:
+                print(f'Failed to parse wl data for {pID}: {err}')
 
-        corruptedPlayerKeys = []
+        corrupted = []
         for player in userInfo:
             try:
                 total = userInfo[player]['win'] + userInfo[player]['lose']
                 assert total > 0
-            except:
-                corruptedPlayerKeys.append(player)
-            else:
                 userInfo[player]['total'] = total
+            except (KeyError, AssertionError):
+                corrupted.append(player)
 
-        for player in corruptedPlayerKeys:
-            del (userInfo[player])
-            
+        for player in corrupted:
+            del userInfo[player]
+
         for player in userInfo:
             userInfo[player]['winPercent'] = round(
-                (userInfo[player]['win']/userInfo[player]['total'])*100, 2)
+                (userInfo[player]['win'] / userInfo[player]['total']) * 100, 2
+            )
 
-        end = time.perf_counter()
-        self.calcTime(start, end)
+        self.calcTime(start, time.perf_counter())
         return userInfo
-    
 
     def getPlayerStats(self):
-        wins = []
-        totalGames = []
-
-        for player, value in self.playerData.items():
-            wins.append(value['winPercent'])
-            totalGames.append(value['total'])
-
-        meanWin = round(statistics.mean(wins), 2)
-        stdWins = round(statistics.stdev(wins), 2)
-        meanTotal = round(statistics.mean(totalGames), 2)
-        stdTotal = round(statistics.stdev(totalGames), 2)
-
-        stats = {
-            "meanWins": meanWin,
-            "meanTotal": meanTotal,
-            "stdWins": stdWins,
-            "stdTotal": stdTotal
-        }
-
-        return stats
-
-    def findOutliers(self, stats):
-
-        stdDev = 1.5
-
-        outliersWinsPositive = {}
-        outliersTotalPositive = {}
-        outliersWinsNegative = {}
-        outliersTotalNegative = {}
-        highWinLowGames = {}
-        lowWinLowGames = {}
-        winPercentThreshold = stats['stdWins'] * (stdDev)
-        totalGamesThreshold = stats['stdTotal'] * (stdDev - 0.5)
-
-        for player, values in self.playerData.items():
-            if values['winPercent'] >= stats['meanWins'] + winPercentThreshold:
-                outliersWinsPositive[player] = values
-            if values['total'] >= stats['meanTotal'] + totalGamesThreshold:
-                outliersTotalPositive[player] = values
-            if values['winPercent'] <= stats['meanWins'] - winPercentThreshold:
-                outliersWinsNegative[player] = values
-            if values['total'] <= stats['meanTotal'] - totalGamesThreshold:
-                outliersTotalNegative[player] = values
-
-        for player1, values1 in self.playerData.items():
-            if player1 in outliersWinsPositive and player1 in outliersTotalNegative:
-                highWinLowGames[player1] = values1
-            if player1 in outliersTotalNegative and player1 in outliersWinsNegative:
-                lowWinLowGames[player1] = values1
-
+        wins = [v['winPercent'] for v in self.playerData.values()]
+        total_games = [v['total'] for v in self.playerData.values()]
         return {
-            "outlierWinsPositive": outliersWinsPositive,
-            "outlierTotalsPositive": outliersTotalPositive,
-            "outliersWinsNegative": outliersWinsNegative,
-            "outliersTotalNegative": outliersTotalNegative,
-            "highWinLowGames": highWinLowGames,
-            "lowWinLowGames": lowWinLowGames,
-            "winPercentThreshold": round(winPercentThreshold, 2),
-            "totalGamesThreshold": round(totalGamesThreshold)
+            'meanWins': round(statistics.mean(wins), 2) if wins else 0,
+            'meanTotal': round(statistics.mean(total_games), 2) if total_games else 0,
+            'stdWins': round(statistics.stdev(wins), 2) if len(wins) > 1 else 0,
+            'stdTotal': round(statistics.stdev(total_games), 2) if len(total_games) > 1 else 0,
         }
 
     def getData(self):
-        retData = {
-            "playerData": self.playerData,
-            "outliers": self.outlierData,
-            "Statistics": self.stats,
-            "matchesAnalyzed": self.matchesAnalysed,
-            "analyzedPlayers": self.getAnalyses(),
-            "APICalls": self.APICalls,
-            "Times": self.times,
-            "MatchesRuined" : self.gamesRuined
+        return {
+            'playerData': self.playerData,
+            'analysis': self.analysis,
+            'outliers': self.outlierData,
+            'Statistics': self.stats,
+            'matchesAnalyzed': self.matchesAnalysed,
+            'matchMode': self.match_mode,
+            'analyzedPlayers': self.getAnalyses(),
+            'APICalls': self.APICalls,
+            'Times': self.times,
+            'MatchesRuined': self.gamesRuined,
         }
-
-        # r = json.dumps(retData, ensure_ascii=False)
-        return retData
-
-    def getPrevDataIfExists(self, id):
-        # path = f"/python/PlayerEntries/{self.id}.json"
-        path = f"../python/PlayerEntries/{self.id}.json"
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf8') as file:
-                try:
-                    data = json.loads(file.read())
-                    self.matchesAnalysed = data["matchesAnalyzed"]
-                    self.playerData = data['playerData']
-                    self.gamesRuined = data['gamesRuined']
-                except json.decoder.JSONDecodeError:
-                    print('Error decoding JSON from file')
-        else:
-            print('file not found')
-        
-        # For testing, remove later
-        # return data['playerData']
-            
-
 
     def getAnalyses(self):
         matches = len(self.matchesAnalysed)
-
-        countPlayers = len(self.playerData)
-        countOutliers = self.countUniqueIds()
-        countPossible = matches * 9
-        analyzedPercent = round((countPlayers/countPossible) * 100, 2)
-        anonPercent = round((100 - analyzedPercent), 2)
-        outlierPercent = round(100*(countOutliers/countPlayers), 2)
-
+        count_players = len(self.playerData)
+        count_outliers = len(self.analysis.get('flaggedPlayerIds', []))
+        count_possible = matches * 9
+        analyzed_percent = round((count_players / count_possible) * 100, 2) if count_possible else 0
         return {
-            "matches": matches,
-            "countPlayers": countPlayers,
-            "countOutliers": countOutliers,
-            "countPossible": countPossible,
-            "analyzedPercent": analyzedPercent,
-            "anonPercent": anonPercent,
-            "outlierPercent": outlierPercent
+            'matches': matches,
+            'countPlayers': count_players,
+            'countOutliers': count_outliers,
+            'countPossible': count_possible,
+            'analyzedPercent': analyzed_percent,
+            'anonPercent': round(100 - analyzed_percent, 2),
+            'outlierPercent': round(100 * (count_outliers / count_players), 2) if count_players else 0,
         }
 
     def removeDuplicates(self, d):
-        res = {}
-        temp = {}
+        return dict(d.items())
 
-        for key, value in d.items():
-            if key not in temp:
-                temp[key] = 1
-                res[key] = value
-            else:
-                temp[key] += 1
-                res[key] = value
-
-        return res
-
-    def countUniqueIds(self):
-        uniques = {}
-        for key in self.outlierData:
-            if isinstance(self.outlierData[key], dict):
-                uniques.update(self.outlierData[key])
-        self.removeDuplicates(uniques)
-        return len(uniques)
-    
-    
-    def decodeUsernames(self, encodedString):
-        return codecs.decode(encodedString, 'unicode_escape')
-        
-
-    def countMatchesWithOutliers(self):
-        count = 0
-        for match, players in self.playerMatchIDs.items():
-            for player in players:
-                if player in self.outlierData['highWinLowGames'].keys() or player in self.outlierData['lowWinLowGames'].keys():
-                    count += 1
-        return count
-                            
-    # EXPERIMENTAL
-    def getFullMatchHistory(self, id):
-        url = f"https://api.opendota.com/api/players/{id}/matches"
-        self.APICalls += 1
-        r = requests.get(url)
-        data = r.json()
-        return data
-
-    def setNMatches(self, n):
-        data = self.getFullMatchHistory()
-        return data[:n]
-    
-
-
-
-# json structure
-"""
-        playerData:
-            {
-            userName: string
-            rank: int
-            win: int
-            lose: int
-            total: int
-            winPercent: float
-            }
-        
-        outliers:
-            {
-            outlierWinsPositive: dictionary
-            outlierTotalsPositive: dictionary
-            outliersWinsNegative: dictionary
-            outliersTotalNegative: dictionary
-            highWinLowGames: dictionary
-            lowWinLowGames: dictionary
-            winPercentThreshold: dictionary
-            totalGamesThreshold: dictionary
-            }
-
-        Statistics:
-            {
-            meanWins: float
-            meanTotal: float
-            stdWins: float
-            stdTotal: float
-            }
-
-        matchesAnalyzed:
-            list
-
-        analyzedPlayers:
-            "matches" : int,
-            "countPlayers" : int,
-            "countOutliers" : int,
-            "analyzedPercent" : float,
-            "anonPercent" : float
-
-        APICalls:
-            {
-            APICalls: int
-            }
-        
-        Times:
-            {
-            times: list
-            }
-
-        """
+    def decodeUsernames(self, encoded_string):
+        return codecs.decode(encoded_string, 'unicode_escape')

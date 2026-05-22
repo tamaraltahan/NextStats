@@ -1,0 +1,998 @@
+{
+  "playerData": {
+    "445427220": {
+      "userName": "çåç¶ä»å¤©åä»ä¹",
+      "rank": 65,
+      "win": 1999,
+      "lose": 1903,
+      "total": 3902,
+      "winPercent": 51.23
+    },
+    "966809967": {
+      "userName": "VCD",
+      "rank": 53,
+      "win": 801,
+      "lose": 804,
+      "total": 1605,
+      "winPercent": 49.91
+    },
+    "34149552": {
+      "userName": "jim possible",
+      "rank": 72,
+      "win": 2425,
+      "lose": 2465,
+      "total": 4890,
+      "winPercent": 49.59
+    },
+    "25963904": {
+      "userName": "shroom",
+      "rank": 80,
+      "win": 2712,
+      "lose": 2553,
+      "total": 5265,
+      "winPercent": 51.51
+    },
+    "72707258": {
+      "userName": "Dynamite",
+      "rank": 54,
+      "win": 3556,
+      "lose": 3366,
+      "total": 6922,
+      "winPercent": 51.37
+    },
+    "78466036": {
+      "userName": "Landzard",
+      "rank": 62,
+      "win": 3719,
+      "lose": 3779,
+      "total": 7498,
+      "winPercent": 49.6
+    },
+    "258791015": {
+      "userName": "ToroToro",
+      "rank": 74,
+      "win": 4154,
+      "lose": 3989,
+      "total": 8143,
+      "winPercent": 51.01
+    },
+    "83829334": {
+      "userName": "Ð±ÐµÐ·Ð´Ð¾Ð¼Ð½ÑÐ¹",
+      "rank": 72,
+      "win": 3907,
+      "lose": 3758,
+      "total": 7665,
+      "winPercent": 50.97
+    },
+    "427959422": {
+      "userName": "Iris von Everec",
+      "rank": 53,
+      "win": 1072,
+      "lose": 1103,
+      "total": 2175,
+      "winPercent": 49.29
+    },
+    "130219515": {
+      "userName": "??x",
+      "rank": 71,
+      "win": 3753,
+      "lose": 3686,
+      "total": 7439,
+      "winPercent": 50.45
+    },
+    "114618933": {
+      "userName": "astarkfuture",
+      "rank": 53,
+      "win": 1618,
+      "lose": 1532,
+      "total": 3150,
+      "winPercent": 51.37
+    },
+    "36189683": {
+      "userName": "OK",
+      "rank": 54,
+      "win": 2800,
+      "lose": 2577,
+      "total": 5377,
+      "winPercent": 52.07
+    },
+    "206380389": {
+      "userName": "Pablo Bot",
+      "rank": 71,
+      "win": 2015,
+      "lose": 1705,
+      "total": 3720,
+      "winPercent": 54.17
+    },
+    "202368512": {
+      "userName": "Kazador the Dragonslayer â­à¶",
+      "rank": 73,
+      "win": 2068,
+      "lose": 1864,
+      "total": 3932,
+      "winPercent": 52.59
+    },
+    "364448052": {
+      "userName": "Bobandy",
+      "rank": 64,
+      "win": 2310,
+      "lose": 2273,
+      "total": 4583,
+      "winPercent": 50.4
+    },
+    "70233317": {
+      "userName": "hero's journey",
+      "rank": 45,
+      "win": 166,
+      "lose": 139,
+      "total": 305,
+      "winPercent": 54.43
+    },
+    "1154054274": {
+      "userName": "raze",
+      "rank": 25,
+      "win": 363,
+      "lose": 447,
+      "total": 810,
+      "winPercent": 44.81
+    },
+    "1986753": {
+      "userName": "Ozymandias",
+      "rank": 62,
+      "win": 3677,
+      "lose": 3671,
+      "total": 7348,
+      "winPercent": 50.04
+    },
+    "140495533": {
+      "userName": "Galavant",
+      "rank": 51,
+      "win": 2012,
+      "lose": 1794,
+      "total": 3806,
+      "winPercent": 52.86
+    },
+    "91453625": {
+      "userName": "Kurotsume",
+      "rank": 65,
+      "win": 2372,
+      "lose": 2345,
+      "total": 4717,
+      "winPercent": 50.29
+    },
+    "426762415": {
+      "userName": "Captain Hook",
+      "rank": 80,
+      "win": 2165,
+      "lose": 2081,
+      "total": 4246,
+      "winPercent": 50.99
+    },
+    "33141624": {
+      "userName": "Dr. Bob",
+      "rank": 51,
+      "win": 2534,
+      "lose": 2567,
+      "total": 5101,
+      "winPercent": 49.68
+    },
+    "11529240": {
+      "userName": "The Muffin Man.NOM",
+      "rank": 43,
+      "win": 4825,
+      "lose": 4967,
+      "total": 9792,
+      "winPercent": 49.27
+    },
+    "167082587": {
+      "userName": "SpyXFamily",
+      "rank": 43,
+      "win": 640,
+      "lose": 624,
+      "total": 1264,
+      "winPercent": 50.63
+    },
+    "177626311": {
+      "userName": "SÃ¦glÃ³pur",
+      "rank": 62,
+      "win": 1952,
+      "lose": 1887,
+      "total": 3839,
+      "winPercent": 50.85
+    },
+    "43702646": {
+      "userName": "bun mang vit",
+      "rank": 62,
+      "win": 3879,
+      "lose": 3948,
+      "total": 7827,
+      "winPercent": 49.56
+    },
+    "241531583": {
+      "userName": "Ice2Big",
+      "rank": 61,
+      "win": 124,
+      "lose": 118,
+      "total": 242,
+      "winPercent": 51.24
+    },
+    "162725139": {
+      "userName": "Mordred",
+      "rank": 51,
+      "win": 1262,
+      "lose": 1178,
+      "total": 2440,
+      "winPercent": 51.72
+    },
+    "124545810": {
+      "userName": "n9e",
+      "rank": 51,
+      "win": 2329,
+      "lose": 2092,
+      "total": 4421,
+      "winPercent": 52.68
+    },
+    "26670255": {
+      "userName": "X.åå¹³",
+      "rank": 63,
+      "win": 4354,
+      "lose": 4403,
+      "total": 8757,
+      "winPercent": 49.72
+    },
+    "192367411": {
+      "userName": "lit",
+      "rank": 62,
+      "win": 1437,
+      "lose": 1379,
+      "total": 2816,
+      "winPercent": 51.03
+    },
+    "39057697": {
+      "userName": "Thot Wrangler",
+      "rank": 54,
+      "win": 3059,
+      "lose": 3069,
+      "total": 6128,
+      "winPercent": 49.92
+    },
+    "168489577": {
+      "userName": "Godot",
+      "rank": 72,
+      "win": 2044,
+      "lose": 2167,
+      "total": 4211,
+      "winPercent": 48.54
+    },
+    "279058688": {
+      "userName": "JFtunkle",
+      "rank": 73,
+      "win": 2516,
+      "lose": 2530,
+      "total": 5046,
+      "winPercent": 49.86
+    },
+    "214096445": {
+      "userName": "!2",
+      "rank": 52,
+      "win": 5418,
+      "lose": 5075,
+      "total": 10493,
+      "winPercent": 51.63
+    },
+    "35630089": {
+      "userName": "su_",
+      "rank": 52,
+      "win": 965,
+      "lose": 923,
+      "total": 1888,
+      "winPercent": 51.11
+    },
+    "36400758": {
+      "userName": "Kagutaba",
+      "rank": 54,
+      "win": 3595,
+      "lose": 3534,
+      "total": 7129,
+      "winPercent": 50.43
+    },
+    "117625550": {
+      "userName": "Zainds-_-!",
+      "rank": 71,
+      "win": 365,
+      "lose": 346,
+      "total": 711,
+      "winPercent": 51.34
+    },
+    "104575645": {
+      "userName": "Sigma Boy",
+      "rank": 72,
+      "win": 4583,
+      "lose": 4518,
+      "total": 9101,
+      "winPercent": 50.36
+    },
+    "353041365": {
+      "userName": "Old Driver",
+      "rank": 53,
+      "win": 3359,
+      "lose": 3093,
+      "total": 6452,
+      "winPercent": 52.06
+    },
+    "102303224": {
+      "userName": "QuanXiTuiDau",
+      "rank": 53,
+      "win": 3886,
+      "lose": 3081,
+      "total": 6967,
+      "winPercent": 55.78
+    },
+    "206991488": {
+      "userName": "BooshBear",
+      "rank": 61,
+      "win": 1487,
+      "lose": 1503,
+      "total": 2990,
+      "winPercent": 49.73
+    },
+    "94806889": {
+      "userName": "Profer",
+      "rank": 63,
+      "win": 2272,
+      "lose": 2079,
+      "total": 4351,
+      "winPercent": 52.22
+    },
+    "472732807": {
+      "userName": "3206-1",
+      "rank": 80,
+      "win": 1839,
+      "lose": 1612,
+      "total": 3451,
+      "winPercent": 53.29
+    },
+    "913808016": {
+      "userName": "iM-SuP3R-GaNkSter",
+      "rank": 52,
+      "win": 2381,
+      "lose": 2358,
+      "total": 4739,
+      "winPercent": 50.24
+    },
+    "287316210": {
+      "userName": "KOI",
+      "rank": 53,
+      "win": 3071,
+      "lose": 2958,
+      "total": 6029,
+      "winPercent": 50.94
+    },
+    "82636818": {
+      "userName": "Mookie Betts",
+      "rank": 43,
+      "win": 2098,
+      "lose": 1859,
+      "total": 3957,
+      "winPercent": 53.02
+    },
+    "94560711": {
+      "userName": "mr worldwide",
+      "rank": 64,
+      "win": 2862,
+      "lose": 2748,
+      "total": 5610,
+      "winPercent": 51.02
+    },
+    "293525664": {
+      "userName": "O",
+      "rank": 61,
+      "win": 353,
+      "lose": 335,
+      "total": 688,
+      "winPercent": 51.31
+    },
+    "1089137216": {
+      "userName": "ane",
+      "rank": 63,
+      "win": 369,
+      "lose": 240,
+      "total": 609,
+      "winPercent": 60.59
+    },
+    "256166668": {
+      "userName": "Tupac wanarius",
+      "rank": 72,
+      "win": 1222,
+      "lose": 1241,
+      "total": 2463,
+      "winPercent": 49.61
+    },
+    "113747019": {
+      "userName": "Deliso",
+      "rank": 72,
+      "win": 4164,
+      "lose": 4112,
+      "total": 8276,
+      "winPercent": 50.31
+    },
+    "152471618": {
+      "userName": "linus the homeless",
+      "rank": 65,
+      "win": 2084,
+      "lose": 1934,
+      "total": 4018,
+      "winPercent": 51.87
+    },
+    "104935009": {
+      "userName": "JoyBoy-",
+      "rank": 64,
+      "win": 2621,
+      "lose": 2715,
+      "total": 5336,
+      "winPercent": 49.12
+    },
+    "123885651": {
+      "userName": "Elden Beast",
+      "rank": 64,
+      "win": 3365,
+      "lose": 3297,
+      "total": 6662,
+      "winPercent": 50.51
+    },
+    "252536140": {
+      "userName": "Noscope",
+      "rank": 45,
+      "win": 1112,
+      "lose": 1173,
+      "total": 2285,
+      "winPercent": 48.67
+    },
+    "84681642": {
+      "userName": "Leprechaun",
+      "rank": 71,
+      "win": 3015,
+      "lose": 2971,
+      "total": 5986,
+      "winPercent": 50.37
+    },
+    "173727546": {
+      "userName": "é±¼è",
+      "rank": 61,
+      "win": 1249,
+      "lose": 1033,
+      "total": 2282,
+      "winPercent": 54.73
+    },
+    "893879901": {
+      "userName": "wdrtpy",
+      "rank": 74,
+      "win": 279,
+      "lose": 177,
+      "total": 456,
+      "winPercent": 61.18
+    },
+    "30547650": {
+      "userName": "Exion",
+      "rank": 64,
+      "win": 2465,
+      "lose": 2460,
+      "total": 4925,
+      "winPercent": 50.05
+    },
+    "174537826": {
+      "userName": "DASANI",
+      "rank": 75,
+      "win": 1024,
+      "lose": 944,
+      "total": 1968,
+      "winPercent": 52.03
+    },
+    "140570906": {
+      "userName": "Fu",
+      "rank": 61,
+      "win": 1618,
+      "lose": 1479,
+      "total": 3097,
+      "winPercent": 52.24
+    },
+    "190546066": {
+      "userName": "L.",
+      "rank": 72,
+      "win": 3616,
+      "lose": 3370,
+      "total": 6986,
+      "winPercent": 51.76
+    },
+    "101532110": {
+      "userName": "Plzburger",
+      "rank": 44,
+      "win": 3587,
+      "lose": 3592,
+      "total": 7179,
+      "winPercent": 49.97
+    },
+    "148451240": {
+      "userName": "ÑÑÐ¿ Ð¸ ÑÐ»ÐµÐ±",
+      "rank": 52,
+      "win": 2805,
+      "lose": 2501,
+      "total": 5306,
+      "winPercent": 52.86
+    },
+    "20014572": {
+      "userName": "smoose",
+      "rank": 71,
+      "win": 4721,
+      "lose": 4363,
+      "total": 9084,
+      "winPercent": 51.97
+    },
+    "95703280": {
+      "userName": "Loq",
+      "rank": 54,
+      "win": 6491,
+      "lose": 6462,
+      "total": 12953,
+      "winPercent": 50.11
+    },
+    "30010327": {
+      "userName": "Sphagetti",
+      "rank": 54,
+      "win": 2199,
+      "lose": 1942,
+      "total": 4141,
+      "winPercent": 53.1
+    },
+    "140384464": {
+      "userName": "é²¨é±¼è¾£æ¤",
+      "rank": 71,
+      "win": 2737,
+      "lose": 2620,
+      "total": 5357,
+      "winPercent": 51.09
+    },
+    "179592445": {
+      "userName": "æå¨ç­cd ä½ å¨ç­ä»ä¹ï¼",
+      "rank": 55,
+      "win": 1349,
+      "lose": 1398,
+      "total": 2747,
+      "winPercent": 49.11
+    },
+    "165140658": {
+      "userName": "Ego",
+      "rank": 65,
+      "win": 500,
+      "lose": 421,
+      "total": 921,
+      "winPercent": 54.29
+    },
+    "253284013": {
+      "userName": "Hannibal",
+      "rank": 55,
+      "win": 3145,
+      "lose": 2898,
+      "total": 6043,
+      "winPercent": 52.04
+    },
+    "179237025": {
+      "userName": "YGG_s1mple",
+      "rank": 41,
+      "win": 590,
+      "lose": 657,
+      "total": 1247,
+      "winPercent": 47.31
+    },
+    "7138817": {
+      "userName": "THE BEST THE BEST THE BEST",
+      "rank": 45,
+      "win": 218,
+      "lose": 221,
+      "total": 439,
+      "winPercent": 49.66
+    },
+    "11915722": {
+      "userName": "Mister Mister",
+      "rank": 34,
+      "win": 2666,
+      "lose": 2560,
+      "total": 5226,
+      "winPercent": 51.01
+    },
+    "64715787": {
+      "userName": "Snow Remnant",
+      "rank": 61,
+      "win": 1234,
+      "lose": 1286,
+      "total": 2520,
+      "winPercent": 48.97
+    },
+    "149105696": {
+      "userName": "Lil B",
+      "rank": 42,
+      "win": 1496,
+      "lose": 1234,
+      "total": 2730,
+      "winPercent": 54.8
+    },
+    "128203807": {
+      "userName": "Hyena Bitch",
+      "rank": 51,
+      "win": 2543,
+      "lose": 2375,
+      "total": 4918,
+      "winPercent": 51.71
+    },
+    "135950725": {
+      "userName": "(G.G)76nathan1",
+      "rank": 44,
+      "win": 715,
+      "lose": 722,
+      "total": 1437,
+      "winPercent": 49.76
+    },
+    "299664629": {
+      "userName": "pollow_xc",
+      "rank": 43,
+      "win": 1316,
+      "lose": 1226,
+      "total": 2542,
+      "winPercent": 51.77
+    },
+    "138909942": {
+      "userName": "ææ(bot)",
+      "rank": 42,
+      "win": 1600,
+      "lose": 1585,
+      "total": 3185,
+      "winPercent": 50.24
+    },
+    "210642513": {
+      "userName": "ç©º",
+      "rank": 42,
+      "win": 3336,
+      "lose": 3269,
+      "total": 6605,
+      "winPercent": 50.51
+    },
+    "112571136": {
+      "userName": "Seruh",
+      "rank": 42,
+      "win": 1064,
+      "lose": 1078,
+      "total": 2142,
+      "winPercent": 49.67
+    }
+  },
+  "outliers": {
+    "outlierWinsPositive": {
+      "102303224": {
+        "userName": "QuanXiTuiDau",
+        "rank": 53,
+        "win": 3886,
+        "lose": 3081,
+        "total": 6967,
+        "winPercent": 55.78
+      },
+      "1089137216": {
+        "userName": "ane",
+        "rank": 63,
+        "win": 369,
+        "lose": 240,
+        "total": 609,
+        "winPercent": 60.59
+      },
+      "173727546": {
+        "userName": "é±¼è",
+        "rank": 61,
+        "win": 1249,
+        "lose": 1033,
+        "total": 2282,
+        "winPercent": 54.73
+      },
+      "893879901": {
+        "userName": "wdrtpy",
+        "rank": 74,
+        "win": 279,
+        "lose": 177,
+        "total": 456,
+        "winPercent": 61.18
+      },
+      "149105696": {
+        "userName": "Lil B",
+        "rank": 42,
+        "win": 1496,
+        "lose": 1234,
+        "total": 2730,
+        "winPercent": 54.8
+      }
+    },
+    "outlierTotalsPositive": {
+      "78466036": {
+        "userName": "Landzard",
+        "rank": 62,
+        "win": 3719,
+        "lose": 3779,
+        "total": 7498,
+        "winPercent": 49.6
+      },
+      "258791015": {
+        "userName": "ToroToro",
+        "rank": 74,
+        "win": 4154,
+        "lose": 3989,
+        "total": 8143,
+        "winPercent": 51.01
+      },
+      "83829334": {
+        "userName": "Ð±ÐµÐ·Ð´Ð¾Ð¼Ð½ÑÐ¹",
+        "rank": 72,
+        "win": 3907,
+        "lose": 3758,
+        "total": 7665,
+        "winPercent": 50.97
+      },
+      "130219515": {
+        "userName": "??x",
+        "rank": 71,
+        "win": 3753,
+        "lose": 3686,
+        "total": 7439,
+        "winPercent": 50.45
+      },
+      "1986753": {
+        "userName": "Ozymandias",
+        "rank": 62,
+        "win": 3677,
+        "lose": 3671,
+        "total": 7348,
+        "winPercent": 50.04
+      },
+      "11529240": {
+        "userName": "The Muffin Man.NOM",
+        "rank": 43,
+        "win": 4825,
+        "lose": 4967,
+        "total": 9792,
+        "winPercent": 49.27
+      },
+      "43702646": {
+        "userName": "bun mang vit",
+        "rank": 62,
+        "win": 3879,
+        "lose": 3948,
+        "total": 7827,
+        "winPercent": 49.56
+      },
+      "26670255": {
+        "userName": "X.åå¹³",
+        "rank": 63,
+        "win": 4354,
+        "lose": 4403,
+        "total": 8757,
+        "winPercent": 49.72
+      },
+      "214096445": {
+        "userName": "!2",
+        "rank": 52,
+        "win": 5418,
+        "lose": 5075,
+        "total": 10493,
+        "winPercent": 51.63
+      },
+      "104575645": {
+        "userName": "Sigma Boy",
+        "rank": 72,
+        "win": 4583,
+        "lose": 4518,
+        "total": 9101,
+        "winPercent": 50.36
+      },
+      "113747019": {
+        "userName": "Deliso",
+        "rank": 72,
+        "win": 4164,
+        "lose": 4112,
+        "total": 8276,
+        "winPercent": 50.31
+      },
+      "20014572": {
+        "userName": "smoose",
+        "rank": 71,
+        "win": 4721,
+        "lose": 4363,
+        "total": 9084,
+        "winPercent": 51.97
+      },
+      "95703280": {
+        "userName": "Loq",
+        "rank": 54,
+        "win": 6491,
+        "lose": 6462,
+        "total": 12953,
+        "winPercent": 50.11
+      }
+    },
+    "outliersWinsNegative": {
+      "1154054274": {
+        "userName": "raze",
+        "rank": 25,
+        "win": 363,
+        "lose": 447,
+        "total": 810,
+        "winPercent": 44.81
+      },
+      "179237025": {
+        "userName": "YGG_s1mple",
+        "rank": 41,
+        "win": 590,
+        "lose": 657,
+        "total": 1247,
+        "winPercent": 47.31
+      }
+    },
+    "outliersTotalNegative": {
+      "966809967": {
+        "userName": "VCD",
+        "rank": 53,
+        "win": 801,
+        "lose": 804,
+        "total": 1605,
+        "winPercent": 49.91
+      },
+      "70233317": {
+        "userName": "hero's journey",
+        "rank": 45,
+        "win": 166,
+        "lose": 139,
+        "total": 305,
+        "winPercent": 54.43
+      },
+      "1154054274": {
+        "userName": "raze",
+        "rank": 25,
+        "win": 363,
+        "lose": 447,
+        "total": 810,
+        "winPercent": 44.81
+      },
+      "167082587": {
+        "userName": "SpyXFamily",
+        "rank": 43,
+        "win": 640,
+        "lose": 624,
+        "total": 1264,
+        "winPercent": 50.63
+      },
+      "241531583": {
+        "userName": "Ice2Big",
+        "rank": 61,
+        "win": 124,
+        "lose": 118,
+        "total": 242,
+        "winPercent": 51.24
+      },
+      "117625550": {
+        "userName": "Zainds-_-!",
+        "rank": 71,
+        "win": 365,
+        "lose": 346,
+        "total": 711,
+        "winPercent": 51.34
+      },
+      "293525664": {
+        "userName": "O",
+        "rank": 61,
+        "win": 353,
+        "lose": 335,
+        "total": 688,
+        "winPercent": 51.31
+      },
+      "1089137216": {
+        "userName": "ane",
+        "rank": 63,
+        "win": 369,
+        "lose": 240,
+        "total": 609,
+        "winPercent": 60.59
+      },
+      "893879901": {
+        "userName": "wdrtpy",
+        "rank": 74,
+        "win": 279,
+        "lose": 177,
+        "total": 456,
+        "winPercent": 61.18
+      },
+      "165140658": {
+        "userName": "Ego",
+        "rank": 65,
+        "win": 500,
+        "lose": 421,
+        "total": 921,
+        "winPercent": 54.29
+      },
+      "179237025": {
+        "userName": "YGG_s1mple",
+        "rank": 41,
+        "win": 590,
+        "lose": 657,
+        "total": 1247,
+        "winPercent": 47.31
+      },
+      "7138817": {
+        "userName": "THE BEST THE BEST THE BEST",
+        "rank": 45,
+        "win": 218,
+        "lose": 221,
+        "total": 439,
+        "winPercent": 49.66
+      },
+      "135950725": {
+        "userName": "(G.G)76nathan1",
+        "rank": 44,
+        "win": 715,
+        "lose": 722,
+        "total": 1437,
+        "winPercent": 49.76
+      }
+    },
+    "highWinLowGames": {
+      "1089137216": {
+        "userName": "ane",
+        "rank": 63,
+        "win": 369,
+        "lose": 240,
+        "total": 609,
+        "winPercent": 60.59
+      },
+      "893879901": {
+        "userName": "wdrtpy",
+        "rank": 74,
+        "win": 279,
+        "lose": 177,
+        "total": 456,
+        "winPercent": 61.18
+      }
+    },
+    "lowWinLowGames": {
+      "1154054274": {
+        "userName": "raze",
+        "rank": 25,
+        "win": 363,
+        "lose": 447,
+        "total": 810,
+        "winPercent": 44.81
+      },
+      "179237025": {
+        "userName": "YGG_s1mple",
+        "rank": 41,
+        "win": 590,
+        "lose": 657,
+        "total": 1247,
+        "winPercent": 47.31
+      }
+    },
+    "winPercentThreshold": 3.42,
+    "totalGamesThreshold": 2660
+  },
+  "Statistics": { "meanWins": 51.22, "meanTotal": 4530.23, "stdWins": 2.28, "stdTotal": 2659.87 },
+  "matchesAnalyzed": [
+    6198519241, 6198450865, 6198416763, 6198353022, 6198331047, 6198303079, 6198199842, 6198157127,
+    6197041851, 6195545599, 6195323165, 6192842679, 6192793281, 6191448385, 6191398632, 6191264507,
+    6191241704, 6188640061, 6188596282, 6188539327
+  ],
+  "analyzedPlayers": {
+    "matches": 20,
+    "countPlayers": 83,
+    "countOutliers": 29,
+    "countPossible": 180,
+    "analyzedPercent": 46.11,
+    "anonPercent": 53.89,
+    "outlierPercent": 34.94
+  },
+  "APICalls": 104,
+  "Times": [25.393409500000416, 186.86051609999777],
+  "MatchesRuined": 4
+}

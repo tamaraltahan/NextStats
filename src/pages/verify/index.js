@@ -1,37 +1,55 @@
 'use client';
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import VerifyPlayer from "../../jsx/VerifyPlayer.jsx";
-import axios from 'axios'
-import Spinner from "../../jsx/Spinner"
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import VerifyPlayer from '../../jsx/VerifyPlayer.jsx';
+import axios from 'axios';
+import Spinner from '../../jsx/Spinner';
 
+export default function VerifyPage() {
+  const [profile, setProfile] = useState(null);
+  const [fetchState, setFetchState] = useState('idle');
+  const { query, isReady } = useRouter();
+  const playerId = query.id != null ? String(query.id) : '';
+  const matchMode = query.mode === 'all' ? 'all' : 'ranked';
+  const validId = /^\d{1,12}$/.test(playerId);
 
+  useEffect(() => {
+    if (!isReady || !validId) return;
 
-export default function Home() {
-
-  const [post, setPost] = useState({})
-  const [isLoading, setIsLoading] = useState(true);
-
-  const {query, isReady} = useRouter()
-
-  useEffect( () => {
-    if (isReady){
-    const playerLink = `https://api.opendota.com/api/players/${query.id}`;
     axios
-      .get(playerLink)
+      .get(`https://api.opendota.com/api/players/${playerId}`)
       .then((response) => {
-        setPost(response.data);
-        setIsLoading(false)
+        setProfile(response.data);
+        setFetchState('ready');
       })
-      .catch((error) => {
-        console.log(error)
+      .catch(() => {
+        setFetchState('error');
       });
-    }
-  }, [isReady])
+  }, [isReady, playerId, validId]);
+
+  if (!isReady) {
+    return <Spinner />;
+  }
+
+  if (!validId) {
+    return <p className="error-banner">Enter a valid numeric OpenDota player ID.</p>;
+  }
+
+  if (fetchState === 'loading' || fetchState === 'idle') {
+    return <Spinner />;
+  }
+
+  if (fetchState === 'error') {
+    return <p className="error-banner">Player not found. Check the ID on OpenDota and try again.</p>;
+  }
 
   return (
     <div>
-      {(!isLoading && post) ? <VerifyPlayer playerName={post.profile.personaname} playerID={query.id}/> : <Spinner /> }
+      <VerifyPlayer
+        playerName={profile?.profile?.personaname ?? 'Unknown'}
+        playerID={playerId}
+        matchMode={matchMode}
+      />
     </div>
-  )
+  );
 }

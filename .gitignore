@@ -31,9 +31,21 @@ yarn-error.log*
 # vercel
 .vercel
 
+# sqlite
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# python
+backend/python/__pycache__/
+*.pyc
+backend/python/*.csv
+
+# env
+.env
+.env.local
 
 backend/python/Tester.ipynb
 backend/python/jobTester.ipynb
 backend/python/DataPreProcessor.ipynb
-backend/python/__pycache__/dataAggregator.cpython-310.pyc
-backend/python/__pycache__/dataAggregator.cpython-311.pyc
